@@ -1,18 +1,43 @@
 ﻿using FirstApp.Services;
+using System.Diagnostics;
 
 namespace FirstApp
 {
 
     public partial class MainPage : ContentPage
     {
+        public string FormatDuration(TimeSpan duration)
+        {
+            if (duration.TotalSeconds < 60)
+                return $"{(int)Math.Round(duration.TotalSeconds)}s";
+
+            if (duration.TotalMinutes < 60)
+                return $"{(int)Math.Round(duration.TotalMinutes)}m {duration.Seconds}s";
+
+            return $"{(int)Math.Round(duration.TotalHours)}h {duration.Minutes}m";
+        }
+        public class ActivitySession
+        {
+            public string AppName { get; set; }
+            public string Title { get; set; }
+            public DateTime StartTime { get; set; }
+            public DateTime EndTime { get; set; }
+
+            public TimeSpan Duration => EndTime - StartTime;
+        }
+
+        List<ActivitySession> _sessions = new();
+
         private async void StartTracking()
         {
             string _lastTitle = null;
+            string _lastApp = null;
             DateTime _startTime = DateTime.Now;
             DateTime _endTime = DateTime.Now;
             TimeSpan duration;
             var _currentApp = "";
             var _currentTitle = "";
+            
 
 
             while (true)
@@ -22,16 +47,32 @@ namespace FirstApp
                 if (_lastTitle == null) 
                 {
                     _lastTitle = _currentTitle;
+                    _lastApp = _currentApp;
                     _startTime = DateTime.Now; 
                 }
                 
                 if (_currentTitle != _lastTitle)
                 {
+                    _sessions.Add(new ActivitySession
+                    {
+                        AppName = _lastApp,
+                        Title = _lastTitle,
+                        StartTime = _startTime,
+                        EndTime = DateTime.Now
+                    });
+                    Sessions.Text = "Previous sessions: ";
+                    foreach (var s in _sessions)
+                    {
+                        Sessions.Text += "\n" + $"{s.AppName} - {s.Title}: {FormatDuration(s.Duration)}\n";
+                    }
                     _endTime = DateTime.Now;
                     duration = _endTime - _startTime;
                     Console.WriteLine($"App: {_lastTitle}, Duration: {duration}");
                     _lastTitle = _currentTitle;
+                    _lastApp = _currentApp;
                     _startTime = DateTime.Now;
+                    Debug.WriteLine($"Total sessions: {_sessions.Count}");
+
                 }
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -42,7 +83,7 @@ namespace FirstApp
 
                 });
 
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
         }
 

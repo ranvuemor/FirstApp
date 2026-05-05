@@ -24,7 +24,7 @@ namespace FirstApp.Services
             if (len <= 0) return null;
             var sb = new StringBuilder(len + 1);
             GetWindowText(hwnd, sb, sb.Capacity);
-            Debug.WriteLine("first call" + sb.ToString());
+            //Debug.WriteLine("first call" + sb.ToString());
             return sb.ToString();
         }
 
@@ -32,7 +32,7 @@ namespace FirstApp.Services
         {
             var hwnd = GetForegroundWindow();
             string? title = GetActiveWindowTitle(hwnd);
-            Debug.WriteLine("second call: " + title);
+            //Debug.WriteLine("second call: " + title);
             return title;
         }
 
@@ -42,7 +42,7 @@ namespace FirstApp.Services
             GetWindowThreadProcessId(hwnd, out int processId);
             var process = Process.GetProcessById(processId);
             var processName = process.ProcessName;
-            Debug.WriteLine("process name: " + processName);
+            //Debug.WriteLine("process name: " + processName);
             return processName;
         }
     }

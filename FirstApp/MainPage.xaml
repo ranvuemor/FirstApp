@@ -34,6 +34,11 @@
                 Text="Duration: Waiting..."
                 FontSize="18" />
 
+            <Label
+                x:Name="Sessions"
+                Text="Previous sessions: Waiting..."
+                FontSize="18" />    
+
         </VerticalStackLayout>
     </ScrollView>
 
