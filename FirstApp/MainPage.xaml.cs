@@ -1,4 +1,5 @@
 ﻿using FirstApp.Services;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace FirstApp
@@ -6,27 +7,31 @@ namespace FirstApp
 
     public partial class MainPage : ContentPage
     {
-        public string FormatDuration(TimeSpan duration)
-        {
-            if (duration.TotalSeconds < 60)
-                return $"{(int)Math.Round(duration.TotalSeconds)}s";
-
-            if (duration.TotalMinutes < 60)
-                return $"{(int)Math.Round(duration.TotalMinutes)}m {duration.Seconds}s";
-
-            return $"{(int)Math.Round(duration.TotalHours)}h {duration.Minutes}m";
-        }
+        
         public class ActivitySession
         {
             public string AppName { get; set; }
             public string Title { get; set; }
             public DateTime StartTime { get; set; }
             public DateTime EndTime { get; set; }
+            public string FormattedDuration =>
+                FormatDuration(EndTime - StartTime);
+            private string FormatDuration(TimeSpan Duration)
+            {
+                if (Duration.TotalSeconds < 60)
+                    return $"{(int)Math.Round(Duration.TotalSeconds)}s";
 
-            public TimeSpan Duration => EndTime - StartTime;
+                if (Duration.TotalMinutes < 60)
+                    return $"{(int)Math.Round(Duration.TotalMinutes)}m {Duration.Seconds}s";
+
+
+                return $"{(int)Math.Round(Duration.TotalHours)}h {Duration.Minutes}m";
+            }
+
         }
 
-        List<ActivitySession> _sessions = new();
+        ObservableCollection<ActivitySession> _sessions = new();
+        
 
         private async void StartTracking()
         {
@@ -38,7 +43,6 @@ namespace FirstApp
             var _currentApp = "";
             var _currentTitle = "";
             
-
 
             while (true)
             {
@@ -59,12 +63,8 @@ namespace FirstApp
                         Title = _lastTitle,
                         StartTime = _startTime,
                         EndTime = DateTime.Now
+
                     });
-                    Sessions.Text = "Previous sessions: ";
-                    foreach (var s in _sessions)
-                    {
-                        Sessions.Text += "\n" + $"{s.AppName} - {s.Title}: {FormatDuration(s.Duration)}\n";
-                    }
                     _endTime = DateTime.Now;
                     duration = _endTime - _startTime;
                     Console.WriteLine($"App: {_lastTitle}, Duration: {duration}");
@@ -81,6 +81,8 @@ namespace FirstApp
                     ActiveAppLabel.Text = "Title: " + _currentTitle;
                     ActiveAppDuration.Text = "Duration: " + (DateTime.Now - _startTime).ToString(@"hh\:mm\:ss");
 
+                    SessionList.ItemsSource = _sessions;
+
                 });
 
                 await Task.Delay(500);
@@ -93,8 +95,10 @@ namespace FirstApp
             var title = ActiveWindowService.GetCurrentWindowTitle();
 
             InitializeComponent();
-            ActiveApp.Text = "Process: " + app;
-            ActiveAppLabel.Text = "Title: " + title;
+            //ActiveApp.Text = "Process: " + app;
+            //ActiveAppLabel.Text = "Title: " + title;
+
+            SessionList.ItemsSource = _sessions;
             StartTracking();
 
         }

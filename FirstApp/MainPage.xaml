@@ -34,10 +34,17 @@
                 Text="Duration: Waiting..."
                 FontSize="18" />
 
-            <Label
-                x:Name="Sessions"
-                Text="Previous sessions: Waiting..."
-                FontSize="18" />    
+            <CollectionView x:Name="SessionList">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Padding="5">
+                            <Label Text="{Binding AppName}" FontAttributes="Bold"/>
+                            <Label Text="{Binding Title}" FontSize="12"/>
+                            <Label Text="{Binding FormattedDuration}" FontSize="12"/>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </VerticalStackLayout>
     </ScrollView>
