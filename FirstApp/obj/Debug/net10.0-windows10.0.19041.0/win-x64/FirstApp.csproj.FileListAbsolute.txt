@@ -516,3 +516,4 @@ D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-windows10.0.19041.0\win-x64\p
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-windows10.0.19041.0\win-x64\qualifiers.txt
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-windows10.0.19041.0\win-x64\qualifiers.txt.intermediate
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-windows10.0.19041.0\win-x64\MultipleQualifiersPerDimensionFound.txt
+D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-windows10.0.19041.0\win-x64\FirstApp.sourcelink.json

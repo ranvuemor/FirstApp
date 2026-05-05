@@ -7,11 +7,6 @@
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a submarine number ten" />
 
             <Label
                 Text="Welcome!"
@@ -19,17 +14,26 @@
                 SemanticProperties.HeadingLevel="Level1" />
 
             <Label
-                Text="This is a demo."
+                Text="This is just the beginning."
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
+            <Label
+                x:Name="ActiveApp"
+                Text="App: Waiting..."
+                FontSize="18" />    
+
+            <Label 
+                x:Name="ActiveAppLabel"
+                Text="Title: Waiting..."
+                FontSize="18" />   
+            
+            <Label
+                x:Name="ActiveAppDuration"
+                Text="Duration: Waiting..."
+                FontSize="18" />
+
         </VerticalStackLayout>
     </ScrollView>
 
