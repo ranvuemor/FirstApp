@@ -281,3 +281,4 @@ D:\vs projects\FirstApp\FirstApp\obj\Release\net10.0-maccatalyst\maccatalyst-arm
 D:\vs projects\FirstApp\FirstApp\obj\Release\net10.0-maccatalyst\maccatalyst-arm64\FirstApp.pdb
 D:\vs projects\FirstApp\FirstApp\obj\Release\net10.0-maccatalyst\maccatalyst-arm64\FirstApp.genruntimeconfig.cache
 D:\vs projects\FirstApp\FirstApp\obj\Release\net10.0-maccatalyst\maccatalyst-arm64\ref\FirstApp.dll
+D:\vs projects\FirstApp\FirstApp\obj\Release\net10.0-maccatalyst\maccatalyst-arm64\FirstApp.sourcelink.json
