@@ -133,7 +133,7 @@ namespace FirstApp
             {
                 "msedge" => "Edge",
                 "chrome" => "Chrome",
-                "devenv" => "Visual Studio",
+                "devenv" => "VS",
                 "explorer" => "Explorer",
                 _ => app
             };
@@ -153,7 +153,7 @@ namespace FirstApp
                 var block = new VerticalStackLayout
                 {
                     WidthRequest = width,
-                    HeightRequest = 20,
+                    HeightRequest = 25,
                     BackgroundColor = GetColorForApp(session.AppName),
                     Padding = 2
                 };
@@ -161,7 +161,7 @@ namespace FirstApp
                 block.Children.Add(new Label
                 {
                     Text = CleanAppName(session.AppName),
-                    FontSize = 5,
+                    FontSize = 8,
                     TextColor = Colors.White
                 });
 
