@@ -4,46 +4,63 @@ using System.Diagnostics;
 
 namespace FirstApp.Services
 {
-    public class ActiveWindowService
+    public static class ActiveWindowService
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern int GetWindowTextLength(IntPtr hWnd);
+        private static extern int GetWindowTextLength(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll")]
-        static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
+        private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
 
-        public static string? GetActiveWindowTitle(IntPtr hwnd)
-        {
-            int len = GetWindowTextLength(hwnd);
-            if (len <= 0) return null;
-            var sb = new StringBuilder(len + 1);
-            GetWindowText(hwnd, sb, sb.Capacity);
-            //Debug.WriteLine("first call" + sb.ToString());
-            return sb.ToString();
-        }
-
-        public static string? GetCurrentWindowTitle()
+        /// <summary>
+        /// Returns both process name and window title in one call
+        /// </summary>
+        public static (string AppName, string Title) GetActiveWindowInfo()
         {
             var hwnd = GetForegroundWindow();
-            string? title = GetActiveWindowTitle(hwnd);
-            //Debug.WriteLine("second call: " + title);
-            return title;
+
+            if (hwnd == IntPtr.Zero)
+                return ("Unknown", "Unknown");
+
+            string title = GetWindowTitle(hwnd);
+            string appName = GetProcessName(hwnd);
+
+            return (appName, title);
         }
 
-        public static string? GetCurrentProcessName()
+        private static string GetWindowTitle(IntPtr hwnd)
         {
-            var hwnd = GetForegroundWindow();
-            GetWindowThreadProcessId(hwnd, out int processId);
-            var process = Process.GetProcessById(processId);
-            var processName = process.ProcessName;
-            //Debug.WriteLine("process name: " + processName);
-            return processName;
+            int length = GetWindowTextLength(hwnd);
+            if (length == 0) return "Unknown";
+
+            var builder = new StringBuilder(length + 1);
+            GetWindowText(hwnd, builder, builder.Capacity);
+
+            return builder.ToString();
+        }
+
+        private static string GetProcessName(IntPtr hwnd)
+        {
+            try
+            {
+                GetWindowThreadProcessId(hwnd, out int processId);
+
+                if (processId == 0)
+                    return "Unknown";
+
+                var process = Process.GetProcessById(processId);
+                return process.ProcessName;
+            }
+            catch
+            {
+                return "Unknown";
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace FirstApp
         public class ActivitySession : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
+            public TimeSpan Duration => EndTime - StartTime;
 
             public string AppName { get; set; }
             public string Title { get; set; }
@@ -46,6 +47,8 @@ namespace FirstApp
 
                 return $"{(int)Math.Round(Duration.TotalHours)}h {Duration.Minutes}m";
             }
+
+
         }
 
         ObservableCollection<ActivitySession> _sessions = new();
@@ -59,14 +62,15 @@ namespace FirstApp
             string _lastApp = null;
             var _currentApp = "";
             var _currentTitle = "";
-
+            DateTime _lastTimelineUpdate = DateTime.MinValue;
 
             while (true)
             {
                 _currentSession.EndTime = DateTime.Now;
+                var (app, title) = ActiveWindowService.GetActiveWindowInfo();
 
-                _currentApp = ActiveWindowService.GetCurrentProcessName();
-                _currentTitle = ActiveWindowService.GetCurrentWindowTitle();
+                _currentApp = app;
+                _currentTitle = title;
 
                 if (_lastTitle == null)
                 {
@@ -77,6 +81,15 @@ namespace FirstApp
                 if (_currentTitle != _lastTitle)
                 {
                     _currentSession.EndTime = DateTime.Now;
+                    if ((DateTime.Now - _lastTimelineUpdate).TotalSeconds > 2)
+                    {
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            UpdateTimeline();
+                        });
+
+                        _lastTimelineUpdate = DateTime.Now;
+                    }
 
                     _currentSession = new ActivitySession
                     {
@@ -87,6 +100,17 @@ namespace FirstApp
                     };
 
                     _sessions.Add(_currentSession);
+                    _currentSession.EndTime = DateTime.Now;
+
+                    if ((DateTime.Now - _lastTimelineUpdate).TotalSeconds > 2)
+                    {
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            UpdateTimeline();
+                        });
+
+                        _lastTimelineUpdate = DateTime.Now;
+                    }
 
                     _lastTitle = _currentTitle;
                     _lastApp = _currentApp;
@@ -103,11 +127,71 @@ namespace FirstApp
             }
         }
 
+        string CleanAppName(string app)
+        {
+            return app.ToLower() switch
+            {
+                "msedge" => "Edge",
+                "chrome" => "Chrome",
+                "devenv" => "Visual Studio",
+                "explorer" => "Explorer",
+                _ => app
+            };
+        }
+
+        void UpdateTimeline()
+        {
+            TimelineContainer.Children.Clear();
+
+
+            foreach (var session in _sessions)
+            {
+                var durationSeconds = session.Duration.TotalSeconds;
+
+                double width = Math.Max(5, durationSeconds * 5);
+
+                var block = new VerticalStackLayout
+                {
+                    WidthRequest = width,
+                    HeightRequest = 20,
+                    BackgroundColor = GetColorForApp(session.AppName),
+                    Padding = 2
+                };
+
+                block.Children.Add(new Label
+                {
+                    Text = CleanAppName(session.AppName),
+                    FontSize = 5,
+                    TextColor = Colors.White
+                });
+
+                block.Children.Add(new Label
+                {
+                    Text = session.FormattedDuration,
+                    FontSize = 5,
+                    TextColor = Colors.White
+                });
+
+                TimelineContainer.Children.Add(block);
+            }
+        }
+
+        Color GetColorForApp(string appName)
+        {
+            return appName switch
+            {
+                "msedge" => Colors.Blue,
+                "chrome" => Colors.Red,
+                "devenv" => Colors.Purple,
+                "explorer" => Colors.Green,
+                _ => Colors.Gray
+            };
+        }
+
         public MainPage()
         {
-
-            var currentApp = ActiveWindowService.GetCurrentProcessName();
-            var currentTitle = ActiveWindowService.GetCurrentWindowTitle();
+            InitializeComponent();
+            var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
             _currentSession = new ActivitySession
             {
                 AppName = currentApp,
@@ -116,10 +200,9 @@ namespace FirstApp
                 EndTime = DateTime.Now
             };
             _sessions.Add(_currentSession);
-
-            InitializeComponent();
-
             SessionList.ItemsSource = _sessions;
+            UpdateTimeline();
+
             StartTracking();
 
         }
