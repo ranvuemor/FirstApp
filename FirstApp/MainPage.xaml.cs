@@ -1,7 +1,8 @@
 ﻿using FirstApp.Services;
+using Microsoft.Maui.Controls.Shapes;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.ComponentModel;
+using FirstApp.Models;
 
 namespace FirstApp
 {
@@ -9,64 +10,37 @@ namespace FirstApp
     public partial class MainPage : ContentPage
     {
 
-        public class ActivitySession : INotifyPropertyChanged
-        {
-            public event PropertyChangedEventHandler PropertyChanged;
-            public TimeSpan Duration => EndTime - StartTime;
-
-            public string AppName { get; set; }
-            public string Title { get; set; }
-            public DateTime StartTime { get; set; }
-
-            private DateTime _endTime;
-            public DateTime EndTime
-            {
-                get => _endTime;
-                set
-                {
-                    _endTime = value;
-                    OnPropertyChanged(nameof(FormattedDuration));
-                }
-            }
-
-            public string FormattedDuration =>
-                FormatDuration(EndTime - StartTime);
-
-            private void OnPropertyChanged(string name)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-
-            private string FormatDuration(TimeSpan Duration)
-            {
-                if (Duration.TotalSeconds < 60)
-                    return $"{(int)Math.Round(Duration.TotalSeconds)}s";
-
-                if (Duration.TotalMinutes < 60)
-                    return $"{(int)Math.Round(Duration.TotalMinutes)}m {Duration.Seconds}s";
-
-                return $"{(int)Math.Round(Duration.TotalHours)}h {Duration.Minutes}m";
-            }
-
-
-        }
-
         ObservableCollection<ActivitySession> _sessions = new();
         ActivitySession _currentSession;
 
 
+        private CancellationTokenSource _cts = new();
 
-        private async void StartTracking()
+        void TryUpdateTimeline(ref DateTime lastUpdate)
+        {
+            if ((DateTime.Now - lastUpdate).TotalSeconds > 0.5)
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    UpdateTimeline();
+                });
+
+                lastUpdate = DateTime.Now;
+            }
+        }
+
+        private async Task StartTracking(CancellationToken token)
         {
             string _lastTitle = null;
-            string _lastApp = null;
             var _currentApp = "";
             var _currentTitle = "";
             DateTime _lastTimelineUpdate = DateTime.MinValue;
 
-            while (true)
+            while (!token.IsCancellationRequested)
             {
                 _currentSession.EndTime = DateTime.Now;
+                TryUpdateTimeline(ref _lastTimelineUpdate);
+
                 var (app, title) = ActiveWindowService.GetActiveWindowInfo();
 
                 _currentApp = app;
@@ -75,21 +49,10 @@ namespace FirstApp
                 if (_lastTitle == null)
                 {
                     _lastTitle = _currentTitle;
-                    _lastApp = _currentApp;
                 }
 
                 if (_currentTitle != _lastTitle)
                 {
-                    _currentSession.EndTime = DateTime.Now;
-                    if ((DateTime.Now - _lastTimelineUpdate).TotalSeconds > 2)
-                    {
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            UpdateTimeline();
-                        });
-
-                        _lastTimelineUpdate = DateTime.Now;
-                    }
 
                     _currentSession = new ActivitySession
                     {
@@ -100,20 +63,9 @@ namespace FirstApp
                     };
 
                     _sessions.Add(_currentSession);
-                    _currentSession.EndTime = DateTime.Now;
 
-                    if ((DateTime.Now - _lastTimelineUpdate).TotalSeconds > 2)
-                    {
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            UpdateTimeline();
-                        });
-
-                        _lastTimelineUpdate = DateTime.Now;
-                    }
 
                     _lastTitle = _currentTitle;
-                    _lastApp = _currentApp;
 
                     Debug.WriteLine($"Total sessions: {_sessions.Count}");
                 }
@@ -123,7 +75,7 @@ namespace FirstApp
                     ActiveAppLabel.Text = "Title: " + _currentTitle;
                     ActiveAppDuration.Text = "Duration: " + _currentSession.FormattedDuration;
                 });
-                await Task.Delay(500);
+                await Task.Delay(500, token);
             }
         }
 
@@ -148,31 +100,44 @@ namespace FirstApp
             {
                 var durationSeconds = session.Duration.TotalSeconds;
 
-                double width = Math.Max(5, durationSeconds * 5);
+                double width = Math.Max(80, Math.Min(300, durationSeconds * 2)); ;
 
                 var block = new VerticalStackLayout
                 {
-                    WidthRequest = width,
-                    HeightRequest = 25,
-                    BackgroundColor = GetColorForApp(session.AppName),
                     Padding = 2
                 };
 
                 block.Children.Add(new Label
                 {
                     Text = CleanAppName(session.AppName),
-                    FontSize = 8,
+                    FontSize = 10,
                     TextColor = Colors.White
                 });
 
                 block.Children.Add(new Label
                 {
                     Text = session.FormattedDuration,
-                    FontSize = 5,
+                    FontSize = 10,
                     TextColor = Colors.White
                 });
 
-                TimelineContainer.Children.Add(block);
+                var border = new Border
+                {
+                    WidthRequest = width,
+                    HeightRequest = 40,
+                    BackgroundColor = GetColorForApp(session.AppName),
+                    Padding = 2,
+                    StrokeThickness = 0,
+
+                    StrokeShape = new RoundRectangle
+                    {
+                        CornerRadius = 6
+                    },
+
+                    Content = block
+                };
+
+                TimelineContainer.Children.Add(border);
             }
         }
 
@@ -201,10 +166,17 @@ namespace FirstApp
             };
             _sessions.Add(_currentSession);
             SessionList.ItemsSource = _sessions;
+
             UpdateTimeline();
 
-            StartTracking();
 
+            _ = StartTracking(_cts.Token);
+        }
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+            _cts.Cancel();
         }
 
     }
