@@ -1,83 +1,254 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FirstApp.MainPage">
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="FirstApp.MainPage"
+    BackgroundColor="#111827">
 
     <ScrollView>
+
         <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
+            Padding="20"
+            Spacing="20">
 
-            <Label
-                Text="Welcome!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+            <!-- HEADER -->
 
-            <Label
-                Text="This is just the beginning."
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+            <VerticalStackLayout Spacing="2">
 
-            <Label
-                x:Name="ActiveApp"
-                Text="App: Waiting..."
-                FontSize="18" />    
+                <Label
+                    Text="App Replay"
+                    FontSize="32"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
 
-            <Label 
-                x:Name="ActiveAppLabel"
-                Text="Title: Waiting..."
-                FontSize="18" />   
-            
-            <Label
-                x:Name="ActiveAppDuration"
-                Text="Duration: Waiting..."
-                FontSize="18" />
+                <Label
+                    Text="Track how your time flows across apps"
+                    FontSize="14"
+                    TextColor="#9CA3AF"/>
 
-            <Label
-                Text="Daily Summary"
-                FontSize="20"
-                FontAttributes="Bold" />
+            </VerticalStackLayout>
 
-            <CollectionView
-                x:Name="SummaryList">
+            <!-- ACTIVE SESSION CARD -->
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <HorizontalStackLayout Padding="5">
+            <Border
+                BackgroundColor="#1F2937"
+                StrokeThickness="0"
+                Padding="16">
 
-                            <Label
-                    Text="{Binding AppName}"
-                    WidthRequest="120" />
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
 
-                            <Label
-                    Text="{Binding FormattedTime}" />
+                <VerticalStackLayout Spacing="10">
 
-                        </HorizontalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <Label
+                        Text="CURRENT ACTIVITY"
+                        FontSize="12"
+                        TextColor="#9CA3AF"
+                        FontAttributes="Bold"/>
 
-            <CollectionView x:Name="SessionList">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <VerticalStackLayout Padding="5">
-                            <Label Text="{Binding AppName}" FontAttributes="Bold"/>
-                            <Label Text="{Binding Title}" FontSize="12"/>
-                            <Label Text="{Binding FormattedDuration}" FontSize="12"/>
-                        </VerticalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <Label
+                        x:Name="ActiveApp"
+                        Text="App: Waiting..."
+                        FontSize="24"
+                        FontAttributes="Bold"
+                        TextColor="White"/>
 
-            <ScrollView Orientation="Horizontal">
-                <HorizontalStackLayout 
-                           x:Name="TimelineContainer"
-                           Spacing="4"
-                           Padding="10"/>
-            </ScrollView>
+                    <Label
+                        x:Name="ActiveAppLabel"
+                        Text="Title: Waiting..."
+                        FontSize="14"
+                        TextColor="#D1D5DB"
+                        LineBreakMode="TailTruncation"/>
+
+                    <Label
+                        x:Name="ActiveAppDuration"
+                        Text="Duration: Waiting..."
+                        FontSize="16"
+                        TextColor="#60A5FA"/>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- TIMELINE SECTION -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <HorizontalStackLayout
+                    HorizontalOptions="Fill"
+                    Spacing="10">
+
+                    <Label
+                        Text="Timeline"
+                        FontSize="22"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        HorizontalOptions="StartAndExpand"/>
+
+                    <Button
+                        Text="-"
+                        WidthRequest="45"
+                        HeightRequest="40"
+                        CornerRadius="12"
+                        FontSize="20"
+                        BackgroundColor="#374151"
+                        TextColor="White"
+                        Clicked="ZoomOutClicked"/>
+
+                    <Button
+                        Text="+"
+                        WidthRequest="45"
+                        HeightRequest="40"
+                        CornerRadius="12"
+                        FontSize="20"
+                        BackgroundColor="#2563EB"
+                        TextColor="White"
+                        Clicked="ZoomInClicked"/>
+
+                </HorizontalStackLayout>
+
+                <Border
+                    BackgroundColor="#1F2937"
+                    StrokeThickness="0"
+                    Padding="12">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+
+                    <ScrollView Orientation="Horizontal">
+
+                        <HorizontalStackLayout
+                            x:Name="TimelineContainer"
+                            Spacing="6"
+                            Padding="4"/>
+
+                    </ScrollView>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- DAILY SUMMARY -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label
+                    Text="Daily Summary"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
+
+                <Border
+                    BackgroundColor="#1F2937"
+                    StrokeThickness="0"
+                    Padding="10">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+
+                    <CollectionView
+                        x:Name="SummaryList"
+                        SelectionMode="None">
+
+                        <CollectionView.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <Grid
+                                    Padding="10"
+                                    ColumnDefinitions="*,Auto">
+
+                                    <Label
+                                        Grid.Column="0"
+                                        Text="{Binding AppName}"
+                                        FontSize="16"
+                                        TextColor="White"
+                                        FontAttributes="Bold"/>
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding FormattedTime}"
+                                        FontSize="16"
+                                        TextColor="#60A5FA"/>
+
+                                </Grid>
+
+                            </DataTemplate>
+
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- SESSION HISTORY -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label
+                    Text="Session History"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
+
+                <Border
+                    BackgroundColor="#1F2937"
+                    StrokeThickness="0"
+                    Padding="10">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+
+                    <CollectionView
+                        x:Name="SessionList"
+                        SelectionMode="None">
+
+                        <CollectionView.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <VerticalStackLayout
+                                    Padding="10"
+                                    Spacing="4">
+
+                                    <Label
+                                        Text="{Binding AppName}"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        TextColor="White"/>
+
+                                    <Label
+                                        Text="{Binding Title}"
+                                        FontSize="12"
+                                        TextColor="#D1D5DB"
+                                        LineBreakMode="TailTruncation"/>
+
+                                    <Label
+                                        Text="{Binding FormattedDuration}"
+                                        FontSize="12"
+                                        TextColor="#60A5FA"/>
+
+                                </VerticalStackLayout>
+
+                            </DataTemplate>
+
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+
+                </Border>
+
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
+
     </ScrollView>
 
 </ContentPage>

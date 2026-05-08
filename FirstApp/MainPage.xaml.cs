@@ -12,12 +12,14 @@ public partial class MainPage : ContentPage
 {
     private readonly ObservableCollection<ActivitySession> _sessions = new();
 
-    private ActivitySession _currentSession;
+    private readonly ObservableCollection<AppSummary>
+        _summaries = new();
 
     private readonly CancellationTokenSource _cts = new();
 
-    private readonly ObservableCollection<AppSummary>
-    _summaries = new();
+    private ActivitySession _currentSession;
+
+    private double _timelineZoom = 2;
 
     public MainPage()
     {
@@ -25,6 +27,7 @@ public partial class MainPage : ContentPage
 
         var (currentApp, currentTitle) =
             ActiveWindowService.GetActiveWindowInfo();
+
         SummaryList.ItemsSource = _summaries;
 
         _currentSession = new ActivitySession
@@ -36,10 +39,10 @@ public partial class MainPage : ContentPage
         };
 
         _sessions.Add(_currentSession);
-        UpdateSummaries();
 
         SessionList.ItemsSource = _sessions;
 
+        UpdateSummaries();
         UpdateTimeline();
 
         _ = StartTracking(_cts.Token);
@@ -54,25 +57,23 @@ public partial class MainPage : ContentPage
 
     private async Task StartTracking(CancellationToken token)
     {
-        string currentApp = "";
-        string currentTitle = "";
-
-        DateTime lastTimelineUpdate = DateTime.MinValue;
+        DateTime lastTimelineUpdate =
+            DateTime.MinValue;
 
         while (!token.IsCancellationRequested)
         {
-            _currentSession.EndTime = DateTime.Now;
+            _currentSession.EndTime =
+                DateTime.Now;
+
             UpdateSummaries();
 
             TryUpdateTimeline(ref lastTimelineUpdate);
 
-            var (app, title) =
+            var (currentApp, currentTitle) =
                 ActiveWindowService.GetActiveWindowInfo();
 
-            currentApp = app;
-            currentTitle = title;
-
-            bool isIdle = IdleDetectionService.IsIdle(10);
+            bool isIdle =
+                IdleDetectionService.IsIdle(10);
 
             if (isIdle)
             {
@@ -82,25 +83,30 @@ public partial class MainPage : ContentPage
 
             if (currentApp != _currentSession.AppName)
             {
-                _currentSession = new ActivitySession
-                {
-                    AppName = currentApp,
-                    Title = currentTitle,
-                    StartTime = DateTime.Now,
-                    EndTime = DateTime.Now
-                };
+                _currentSession =
+                    new ActivitySession
+                    {
+                        AppName = currentApp,
+                        Title = currentTitle,
+                        StartTime = DateTime.Now,
+                        EndTime = DateTime.Now
+                    };
 
                 _sessions.Add(_currentSession);
 
                 Debug.WriteLine(
-                    $"New session started: {currentApp}"
+                    $"New session: {currentApp}"
                 );
             }
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                ActiveApp.Text = $"App: {currentApp}";
-                ActiveAppLabel.Text = $"Title: {currentTitle}";
+                ActiveApp.Text =
+                    $"App: {currentApp}";
+
+                ActiveAppLabel.Text =
+                    $"Title: {currentTitle}";
+
                 ActiveAppDuration.Text =
                     $"Duration: {_currentSession.FormattedDuration}";
             });
@@ -109,12 +115,15 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void TryUpdateTimeline(ref DateTime lastUpdate)
+    private void TryUpdateTimeline(
+        ref DateTime lastUpdate)
     {
-        if ((DateTime.Now - lastUpdate).TotalSeconds <= 0.5)
+        if ((DateTime.Now - lastUpdate)
+            .TotalSeconds <= 0.5)
             return;
 
-        MainThread.BeginInvokeOnMainThread(UpdateTimeline);
+        MainThread.BeginInvokeOnMainThread(
+            UpdateTimeline);
 
         lastUpdate = DateTime.Now;
     }
@@ -129,11 +138,14 @@ public partial class MainPage : ContentPage
             {
                 AppName = g.Key,
 
-                TotalTime = TimeSpan.FromSeconds(
-                    g.Sum(s => s.Duration.TotalSeconds)
-                )
+                TotalTime =
+                    TimeSpan.FromSeconds(
+                        g.Sum(s =>
+                            s.Duration.TotalSeconds)
+                    )
             })
-            .OrderByDescending(s => s.TotalTime);
+            .OrderByDescending(
+                s => s.TotalTime);
 
         foreach (var summary in grouped)
         {
@@ -154,7 +166,13 @@ public partial class MainPage : ContentPage
                 session.Duration.TotalSeconds;
 
             double width =
-                Math.Max(80, Math.Min(300, durationSeconds * 2));
+                Math.Max(
+                    30,
+                    Math.Min(
+                        500,
+                        durationSeconds * _timelineZoom
+                    )
+                );
 
             var content = new VerticalStackLayout
             {
@@ -162,38 +180,70 @@ public partial class MainPage : ContentPage
                 Spacing = 0
             };
 
-            content.Children.Add(new Label
+            if (width >= 100)
             {
-                Text = CleanAppName(session.AppName),
-                FontSize = 10,
-                TextColor = Colors.White
-            });
+                content.Children.Add(new Label
+                {
+                    Text =
+                        CleanAppName(
+                            session.AppName),
 
-            content.Children.Add(new Label
-            {
-                Text = session.FormattedDuration,
-                FontSize = 10,
-                TextColor = Colors.White
-            });
+                    FontSize = 10,
+                    TextColor = Colors.White
+                });
+
+                content.Children.Add(new Label
+                {
+                    Text =
+                        session.FormattedDuration,
+
+                    FontSize = 10,
+                    TextColor = Colors.White
+                });
+            }
 
             var border = new Border
             {
                 WidthRequest = width,
                 HeightRequest = 40,
-                BackgroundColor = GetColorForApp(session.AppName),
+
+                BackgroundColor =
+                    GetColorForApp(
+                        session.AppName),
+
                 Padding = 2,
                 StrokeThickness = 0,
 
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = 6
-                },
+                StrokeShape =
+                    new RoundRectangle
+                    {
+                        CornerRadius = 6
+                    },
 
                 Content = content
             };
 
             TimelineContainer.Children.Add(border);
         }
+    }
+
+    private void ZoomInClicked(
+        object sender,
+        EventArgs e)
+    {
+        _timelineZoom += 1;
+
+        UpdateTimeline();
+    }
+
+    private void ZoomOutClicked(
+        object sender,
+        EventArgs e)
+    {
+        _timelineZoom =
+            Math.Max(1, _timelineZoom - 1);
+
+        UpdateTimeline();
     }
 
     private string CleanAppName(string app)
@@ -209,7 +259,8 @@ public partial class MainPage : ContentPage
         };
     }
 
-    private Color GetColorForApp(string appName)
+    private Color GetColorForApp(
+        string appName)
     {
         return appName.ToLower() switch
         {
