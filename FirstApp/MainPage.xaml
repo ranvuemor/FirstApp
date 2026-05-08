@@ -34,6 +34,30 @@
                 Text="Duration: Waiting..."
                 FontSize="18" />
 
+            <Label
+                Text="Daily Summary"
+                FontSize="20"
+                FontAttributes="Bold" />
+
+            <CollectionView
+                x:Name="SummaryList">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <HorizontalStackLayout Padding="5">
+
+                            <Label
+                    Text="{Binding AppName}"
+                    WidthRequest="120" />
+
+                            <Label
+                    Text="{Binding FormattedTime}" />
+
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
             <CollectionView x:Name="SessionList">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

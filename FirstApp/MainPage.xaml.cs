@@ -1,183 +1,224 @@
-﻿using FirstApp.Services;
+﻿using FirstApp.Models;
+using FirstApp.Services;
+
 using Microsoft.Maui.Controls.Shapes;
+
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using FirstApp.Models;
 
-namespace FirstApp
+namespace FirstApp;
+
+public partial class MainPage : ContentPage
 {
+    private readonly ObservableCollection<ActivitySession> _sessions = new();
 
-    public partial class MainPage : ContentPage
+    private ActivitySession _currentSession;
+
+    private readonly CancellationTokenSource _cts = new();
+
+    private readonly ObservableCollection<AppSummary>
+    _summaries = new();
+
+    public MainPage()
     {
+        InitializeComponent();
 
-        ObservableCollection<ActivitySession> _sessions = new();
-        ActivitySession _currentSession;
+        var (currentApp, currentTitle) =
+            ActiveWindowService.GetActiveWindowInfo();
+        SummaryList.ItemsSource = _summaries;
 
-
-        private CancellationTokenSource _cts = new();
-
-        void TryUpdateTimeline(ref DateTime lastUpdate)
+        _currentSession = new ActivitySession
         {
-            if ((DateTime.Now - lastUpdate).TotalSeconds > 0.5)
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    UpdateTimeline();
-                });
+            AppName = currentApp,
+            Title = currentTitle,
+            StartTime = DateTime.Now,
+            EndTime = DateTime.Now
+        };
 
-                lastUpdate = DateTime.Now;
+        _sessions.Add(_currentSession);
+        UpdateSummaries();
+
+        SessionList.ItemsSource = _sessions;
+
+        UpdateTimeline();
+
+        _ = StartTracking(_cts.Token);
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        _cts.Cancel();
+    }
+
+    private async Task StartTracking(CancellationToken token)
+    {
+        string currentApp = "";
+        string currentTitle = "";
+
+        DateTime lastTimelineUpdate = DateTime.MinValue;
+
+        while (!token.IsCancellationRequested)
+        {
+            _currentSession.EndTime = DateTime.Now;
+            UpdateSummaries();
+
+            TryUpdateTimeline(ref lastTimelineUpdate);
+
+            var (app, title) =
+                ActiveWindowService.GetActiveWindowInfo();
+
+            currentApp = app;
+            currentTitle = title;
+
+            bool isIdle = IdleDetectionService.IsIdle(10);
+
+            if (isIdle)
+            {
+                currentApp = "Idle";
+                currentTitle = "User inactive";
             }
-        }
 
-        private async Task StartTracking(CancellationToken token)
-        {
-            string _lastTitle = null;
-            var _currentApp = "";
-            var _currentTitle = "";
-            DateTime _lastTimelineUpdate = DateTime.MinValue;
-
-            while (!token.IsCancellationRequested)
+            if (currentApp != _currentSession.AppName)
             {
-                _currentSession.EndTime = DateTime.Now;
-                TryUpdateTimeline(ref _lastTimelineUpdate);
-
-                var (app, title) = ActiveWindowService.GetActiveWindowInfo();
-
-                _currentApp = app;
-                _currentTitle = title;
-
-                if (_lastTitle == null)
+                _currentSession = new ActivitySession
                 {
-                    _lastTitle = _currentTitle;
-                }
-
-                if (_currentTitle != _lastTitle)
-                {
-
-                    _currentSession = new ActivitySession
-                    {
-                        AppName = _currentApp,
-                        Title = _currentTitle,
-                        StartTime = DateTime.Now,
-                        EndTime = DateTime.Now
-                    };
-
-                    _sessions.Add(_currentSession);
-
-
-                    _lastTitle = _currentTitle;
-
-                    Debug.WriteLine($"Total sessions: {_sessions.Count}");
-                }
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    ActiveApp.Text = "App: " + _currentApp;
-                    ActiveAppLabel.Text = "Title: " + _currentTitle;
-                    ActiveAppDuration.Text = "Duration: " + _currentSession.FormattedDuration;
-                });
-                await Task.Delay(500, token);
-            }
-        }
-
-        string CleanAppName(string app)
-        {
-            return app.ToLower() switch
-            {
-                "msedge" => "Edge",
-                "chrome" => "Chrome",
-                "devenv" => "VS",
-                "explorer" => "Explorer",
-                _ => app
-            };
-        }
-
-        void UpdateTimeline()
-        {
-            TimelineContainer.Children.Clear();
-
-
-            foreach (var session in _sessions)
-            {
-                var durationSeconds = session.Duration.TotalSeconds;
-
-                double width = Math.Max(80, Math.Min(300, durationSeconds * 2)); ;
-
-                var block = new VerticalStackLayout
-                {
-                    Padding = 2
+                    AppName = currentApp,
+                    Title = currentTitle,
+                    StartTime = DateTime.Now,
+                    EndTime = DateTime.Now
                 };
 
-                block.Children.Add(new Label
-                {
-                    Text = CleanAppName(session.AppName),
-                    FontSize = 10,
-                    TextColor = Colors.White
-                });
+                _sessions.Add(_currentSession);
 
-                block.Children.Add(new Label
-                {
-                    Text = session.FormattedDuration,
-                    FontSize = 10,
-                    TextColor = Colors.White
-                });
-
-                var border = new Border
-                {
-                    WidthRequest = width,
-                    HeightRequest = 40,
-                    BackgroundColor = GetColorForApp(session.AppName),
-                    Padding = 2,
-                    StrokeThickness = 0,
-
-                    StrokeShape = new RoundRectangle
-                    {
-                        CornerRadius = 6
-                    },
-
-                    Content = block
-                };
-
-                TimelineContainer.Children.Add(border);
+                Debug.WriteLine(
+                    $"New session started: {currentApp}"
+                );
             }
-        }
 
-        Color GetColorForApp(string appName)
-        {
-            return appName switch
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                "msedge" => Colors.Blue,
-                "chrome" => Colors.Red,
-                "devenv" => Colors.Purple,
-                "explorer" => Colors.Green,
-                _ => Colors.Gray
-            };
-        }
+                ActiveApp.Text = $"App: {currentApp}";
+                ActiveAppLabel.Text = $"Title: {currentTitle}";
+                ActiveAppDuration.Text =
+                    $"Duration: {_currentSession.FormattedDuration}";
+            });
 
-        public MainPage()
-        {
-            InitializeComponent();
-            var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
-            _currentSession = new ActivitySession
+            await Task.Delay(500, token);
+        }
+    }
+
+    private void TryUpdateTimeline(ref DateTime lastUpdate)
+    {
+        if ((DateTime.Now - lastUpdate).TotalSeconds <= 0.5)
+            return;
+
+        MainThread.BeginInvokeOnMainThread(UpdateTimeline);
+
+        lastUpdate = DateTime.Now;
+    }
+
+    private void UpdateSummaries()
+    {
+        _summaries.Clear();
+
+        var grouped = _sessions
+            .GroupBy(s => s.AppName)
+            .Select(g => new AppSummary
             {
-                AppName = currentApp,
-                Title = currentTitle,
-                StartTime = DateTime.Now,
-                EndTime = DateTime.Now
-            };
-            _sessions.Add(_currentSession);
-            SessionList.ItemsSource = _sessions;
+                AppName = g.Key,
 
-            UpdateTimeline();
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
+            })
+            .OrderByDescending(s => s.TotalTime);
 
-
-            _ = StartTracking(_cts.Token);
-        }
-        protected override void OnDisappearing()
+        foreach (var summary in grouped)
         {
-            base.OnDisappearing();
-
-            _cts.Cancel();
+            _summaries.Add(summary);
         }
+    }
 
+    private void UpdateTimeline()
+    {
+        if (TimelineContainer == null)
+            return;
+
+        TimelineContainer.Children.Clear();
+
+        foreach (var session in _sessions)
+        {
+            double durationSeconds =
+                session.Duration.TotalSeconds;
+
+            double width =
+                Math.Max(80, Math.Min(300, durationSeconds * 2));
+
+            var content = new VerticalStackLayout
+            {
+                Padding = 2,
+                Spacing = 0
+            };
+
+            content.Children.Add(new Label
+            {
+                Text = CleanAppName(session.AppName),
+                FontSize = 10,
+                TextColor = Colors.White
+            });
+
+            content.Children.Add(new Label
+            {
+                Text = session.FormattedDuration,
+                FontSize = 10,
+                TextColor = Colors.White
+            });
+
+            var border = new Border
+            {
+                WidthRequest = width,
+                HeightRequest = 40,
+                BackgroundColor = GetColorForApp(session.AppName),
+                Padding = 2,
+                StrokeThickness = 0,
+
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = 6
+                },
+
+                Content = content
+            };
+
+            TimelineContainer.Children.Add(border);
+        }
+    }
+
+    private string CleanAppName(string app)
+    {
+        return app.ToLower() switch
+        {
+            "msedge" => "Edge",
+            "chrome" => "Chrome",
+            "devenv" => "VS",
+            "explorer" => "Explorer",
+            "idle" => "Idle",
+            _ => app
+        };
+    }
+
+    private Color GetColorForApp(string appName)
+    {
+        return appName.ToLower() switch
+        {
+            "msedge" => Colors.Blue,
+            "chrome" => Colors.Red,
+            "devenv" => Colors.Purple,
+            "explorer" => Colors.Green,
+            "idle" => Colors.DarkGray,
+            _ => Colors.Gray
+        };
     }
 }
