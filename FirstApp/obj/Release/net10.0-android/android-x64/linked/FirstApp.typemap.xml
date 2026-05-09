@@ -1,8 +1,8 @@
-<api type="release" assembly-name="FirstApp" mvid="235354dbcf1042f0832cec72e83e61a8">
-  <module assembly-name="FirstApp" mvid="235354dbcf1042f0832cec72e83e61a8" mvid-bytes="21RTIxDP8EKDLOxy6D5hqA==">
+<api type="release" assembly-name="FirstApp" mvid="9f34a07a366a46a2a4ce7558c23c95e3">
+  <module assembly-name="FirstApp" mvid="9f34a07a366a46a2a4ce7558c23c95e3" mvid-bytes="eqA0n2o2okakznVYwjyV4w==">
     <types-scratch>
-      <entry key="crc64a3663bb36bd1a3f0/MainActivity" java-name="crc64a3663bb36bd1a3f0/MainActivity" managed-type-name="FirstApp.MainActivity" token="33554441" />
-      <entry key="crc64a3663bb36bd1a3f0/MainApplication" java-name="crc64a3663bb36bd1a3f0/MainApplication" managed-type-name="FirstApp.MainApplication" token="33554442" />
+      <entry key="crc64a3663bb36bd1a3f0/MainActivity" java-name="crc64a3663bb36bd1a3f0/MainActivity" managed-type-name="FirstApp.MainActivity" token="33554442" />
+      <entry key="crc64a3663bb36bd1a3f0/MainApplication" java-name="crc64a3663bb36bd1a3f0/MainApplication" managed-type-name="FirstApp.MainApplication" token="33554443" />
     </types-scratch>
   </module>
 </api>

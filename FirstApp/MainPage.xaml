@@ -187,6 +187,33 @@
 
             </VerticalStackLayout>
 
+            <!-- USAGE CHART -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label
+                    Text="Usage Chart"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
+
+                <Border
+                    BackgroundColor="#1F2937"
+                    StrokeThickness="0"
+                    Padding="12">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout
+                        x:Name="UsageChartContainer"
+                        Spacing="10"/>
+
+                </Border>
+
+            </VerticalStackLayout>
+
             <!-- SESSION HISTORY -->
 
             <VerticalStackLayout Spacing="12">

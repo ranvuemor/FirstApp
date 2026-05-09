@@ -151,6 +151,7 @@ public partial class MainPage : ContentPage
                 existing.TotalTime = item.TotalTime;
             }
         }
+        UpdateUsageChart();
     }
 
     private void TryUpdateSummaries(ref DateTime lastUpdate)
@@ -233,6 +234,82 @@ public partial class MainPage : ContentPage
             };
 
             TimelineContainer.Children.Add(border);
+        }
+    }
+
+    private void UpdateUsageChart()
+    {
+        if (UsageChartContainer == null)
+            return;
+
+        UsageChartContainer.Children.Clear();
+
+        if (_summaries.Count == 0)
+            return;
+
+        double maxSeconds =
+            _summaries.Max(s => s.TotalTime.TotalSeconds);
+
+        if (maxSeconds <= 0)
+            return;
+
+        foreach (var summary in _summaries)
+        {
+            double seconds =
+                summary.TotalTime.TotalSeconds;
+
+            double barWidth =
+                Math.Max(20, (seconds / maxSeconds) * 300);
+
+            var row = new Grid
+            {
+                ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = 90 },
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = 70 }
+            },
+                ColumnSpacing = 10,
+                Padding = new Thickness(0, 4)
+            };
+
+            var nameLabel = new Label
+            {
+                Text = AppNameFormatter.Clean(summary.AppName),
+                TextColor = Colors.White,
+                FontSize = 14,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            var bar = new Border
+            {
+                WidthRequest = barWidth,
+                HeightRequest = 16,
+                BackgroundColor = GetColorForApp(summary.AppName),
+                StrokeThickness = 0,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center,
+
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = 8
+                }
+            };
+
+            var timeLabel = new Label
+            {
+                Text = summary.FormattedTime,
+                TextColor = Colors.LightGray,
+                FontSize = 14,
+                HorizontalTextAlignment = TextAlignment.End,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            row.Add(nameLabel, 0, 0);
+            row.Add(bar, 1, 0);
+            row.Add(timeLabel, 2, 0);
+
+            UsageChartContainer.Children.Add(row);
         }
     }
 
