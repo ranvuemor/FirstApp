@@ -1,67 +1,63 @@
-# FirstApp – Real-Time Activity Tracker (MAUI .NET)
+# FirstApp – Real-Time Activity Tracker
 
-FirstApp is a .NET MAUI application that tracks which application is currently active on a Windows machine and logs how much time is spent in each app. It also visualizes this activity as a simple timeline.
-
-This project is mainly for learning how to work with system-level APIs, real-time UI updates, and basic data visualization in MAUI.
+FirstApp is a Windows-focused .NET MAUI application that tracks the currently active application, records usage sessions, detects idle time, and visualizes activity through a timeline and dashboard.
 
 ---
 
 ## Features
 
-- Tracks the currently active Windows application and window title
-- Records time spent on each application automatically
-- Creates sessions when the active window changes
-- Displays live information about the current app and session duration
-- Shows a session history list
-- Visual timeline showing activity blocks sized by duration and colored by app
+### Active app tracking
+
+- Detects the currently active Windows application
+- Captures the active window title
+- Tracks how long each app stays active
+- Creates a new session when the active app changes
+
+### Idle detection
+
+- Detects when the user has not used the keyboard or mouse for a set period
+- Adds idle time as its own activity state
+- Shows idle periods in the timeline, summaries, and usage chart
 
 ---
 
-## How it works
-
-- The app uses Windows API calls to detect the foreground window
-- Every 500ms, it checks if the active window has changed
-- When a change is detected, the previous session is saved and a new one begins
-- The UI is updated continuously to reflect current activity
-- A timeline is rebuilt from the session list to visualize usage
-
----
-
-## Technologies used
+## Technologies Used
 
 - .NET MAUI
 - C#
-- Windows user32.dll (Win32 API)
-- ObservableCollection for UI binding
-- INotifyPropertyChanged for live updates
+- Windows Win32 API
+- `user32.dll`
+- `ObservableCollection`
+- `INotifyPropertyChanged`
+- MAUI `Border`
+- MAUI `CollectionView`
+- MAUI layout controls
 
 ---
 
-## Current limitations
+## Windows APIs Used
 
-- Data is stored only in memory (no persistence yet)
-- Timeline is fully rebuilt on every update (not optimized)
-- No merging of repeated sessions from the same app
-- Works only on Windows
+The app uses Windows APIs to read system activity:
 
----
+- `GetForegroundWindow`
+- `GetWindowText`
+- `GetWindowTextLength`
+- `GetWindowThreadProcessId`
+- `GetLastInputInfo`
 
-## Future improvements
-
-- Save sessions to local storage or database
-- Merge consecutive sessions from the same app
-- Improve timeline performance with incremental updates
-- Add analytics like total daily usage per app
-- Add idle detection (keyboard/mouse inactivity)
-- Build a full daily activity dashboard
+These APIs allow the app to detect the active window, process name, window title, and user idle time.
 
 ---
 
 ## Purpose
 
-This project is a learning exercise to understand:
+The goal of this project is to learn how to build a real desktop application that combines:
 
-- How to interact with Windows system APIs in C#
-- How to build real-time tracking applications
-- How to structure reactive UI applications in MAUI
-- How to visualize time-based data
+- system-level programming
+- real-time tracking
+- state management
+- reactive UI
+- data visualization
+- productivity analytics
+
+The long-term vision is to build a personal “App Replay” dashboard that helps users understand how their time is spent across apps and activities.
