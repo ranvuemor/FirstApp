@@ -2671,3 +2671,4 @@ D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-android\stamp\_ConvertResourc
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-android\stamp\_GenerateJavaStubs.stamp
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-android\stamp\_GeneratePackageManagerJava.stamp
 D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-android\stamp\_ResolveLibraryProjectImports.stamp
+D:\vs projects\FirstApp\FirstApp\obj\Debug\net10.0-android\FirstApp.sourcelink.json

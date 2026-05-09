@@ -4,6 +4,11 @@
         <name>FirstApp</name>
     </assembly>
     <members>
+        <member name="M:FirstApp.Services.ActiveWindowService.GetActiveWindowInfo">
+            <summary>
+            Returns both process name and window title in one call
+            </summary>
+        </member>
         <member name="T:FirstApp.Resource">
             <summary>
             Android Resource Designer class.

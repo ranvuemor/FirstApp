@@ -164,7 +164,7 @@
 
                                     <Label
                                         Grid.Column="0"
-                                        Text="{Binding AppName}"
+                                        Text="{Binding DisplayName}"
                                         FontSize="16"
                                         TextColor="White"
                                         FontAttributes="Bold"/>
@@ -219,16 +219,16 @@
                                     Spacing="4">
 
                                     <Label
-                                        Text="{Binding AppName}"
+                                        Text="{Binding DisplayName}"
                                         FontSize="16"
                                         FontAttributes="Bold"
                                         TextColor="White"/>
 
-                                    <Label
+                                    <!--<Label
                                         Text="{Binding Title}"
                                         FontSize="12"
                                         TextColor="#D1D5DB"
-                                        LineBreakMode="TailTruncation"/>
+                                        LineBreakMode="TailTruncation"/>-->
 
                                     <Label
                                         Text="{Binding FormattedDuration}"

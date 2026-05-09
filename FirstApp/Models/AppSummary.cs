@@ -1,13 +1,41 @@
-﻿namespace FirstApp.Models;
+﻿using FirstApp.Services;
+using System.ComponentModel;
 
-public class AppSummary
+namespace FirstApp.Models;
+
+public class AppSummary : INotifyPropertyChanged
 {
-    public string AppName { get; set; }
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    public TimeSpan TotalTime { get; set; }
+    public string AppName { get; set; } = "";
 
-    public string FormattedTime =>
-        FormatDuration(TotalTime);
+    public string DisplayName => AppNameFormatter.Clean(AppName);
+
+    private TimeSpan _totalTime;
+
+    public TimeSpan TotalTime
+    {
+        get => _totalTime;
+        set
+        {
+            if (_totalTime == value)
+                return;
+
+            _totalTime = value;
+            OnPropertyChanged(nameof(TotalTime));
+            OnPropertyChanged(nameof(FormattedTime));
+        }
+    }
+
+    public string FormattedTime => FormatDuration(TotalTime);
+
+    private void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(
+            this,
+            new PropertyChangedEventArgs(propertyName)
+        );
+    }
 
     private string FormatDuration(TimeSpan duration)
     {

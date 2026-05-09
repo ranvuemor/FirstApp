@@ -1,50 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FirstApp.Services;
 using System.ComponentModel;
-using System.Text;
 
-namespace FirstApp.Models
+namespace FirstApp.Models;
+
+public class ActivitySession : INotifyPropertyChanged
 {
-        public class ActivitySession : INotifyPropertyChanged
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string AppName { get; set; } = "";
+
+    public string DisplayName => AppNameFormatter.Clean(AppName);
+
+    public string Title { get; set; } = "";
+
+    public DateTime StartTime { get; set; }
+
+    private DateTime _endTime;
+
+    public DateTime EndTime
+    {
+        get => _endTime;
+        set
         {
-            public event PropertyChangedEventHandler PropertyChanged;
-            public TimeSpan Duration => EndTime - StartTime;
+            if (_endTime == value)
+                return;
 
-            public string AppName { get; set; }
-            public string Title { get; set; }
-            public DateTime StartTime { get; set; }
-
-            private DateTime _endTime;
-            public DateTime EndTime
-            {
-                get => _endTime;
-                set
-                {
-                    _endTime = value;
-                    OnPropertyChanged(nameof(FormattedDuration));
-                }
-            }
-
-            public string FormattedDuration =>
-                FormatDuration(EndTime - StartTime);
-
-            private void OnPropertyChanged(string name)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            }
-
-            private string FormatDuration(TimeSpan Duration)
-            {
-                if (Duration.TotalSeconds < 60)
-                    return $"{(int)Math.Round(Duration.TotalSeconds)}s";
-
-                if (Duration.TotalMinutes < 60)
-                    return $"{(int)Math.Round(Duration.TotalMinutes)}m {Duration.Seconds}s";
-
-                return $"{(int)Math.Round(Duration.TotalHours)}h {Duration.Minutes}m";
-            }
-
-
+            _endTime = value;
+            OnPropertyChanged(nameof(EndTime));
+            OnPropertyChanged(nameof(Duration));
+            OnPropertyChanged(nameof(FormattedDuration));
         }
-    
+    }
+
+    public TimeSpan Duration => EndTime - StartTime;
+
+    public string FormattedDuration => FormatDuration(Duration);
+
+    private void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(
+            this,
+            new PropertyChangedEventArgs(propertyName)
+        );
+    }
+
+    private string FormatDuration(TimeSpan duration)
+    {
+        if (duration.TotalSeconds < 60)
+            return $"{(int)duration.TotalSeconds}s";
+
+        if (duration.TotalMinutes < 60)
+            return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
+
+        return $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
 }

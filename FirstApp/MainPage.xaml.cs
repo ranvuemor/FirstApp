@@ -12,8 +12,7 @@ public partial class MainPage : ContentPage
 {
     private readonly ObservableCollection<ActivitySession> _sessions = new();
 
-    private readonly ObservableCollection<AppSummary>
-        _summaries = new();
+    private readonly ObservableCollection<AppSummary> _summaries = new();
 
     private readonly CancellationTokenSource _cts = new();
 
@@ -25,8 +24,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
 
-        var (currentApp, currentTitle) =
-            ActiveWindowService.GetActiveWindowInfo();
+        var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
 
         SummaryList.ItemsSource = _summaries;
 
@@ -57,23 +55,20 @@ public partial class MainPage : ContentPage
 
     private async Task StartTracking(CancellationToken token)
     {
-        DateTime lastTimelineUpdate =
-            DateTime.MinValue;
+        DateTime lastTimelineUpdate = DateTime.MinValue;
+        DateTime lastSummaryUpdate = DateTime.MinValue;
 
         while (!token.IsCancellationRequested)
         {
-            _currentSession.EndTime =
-                DateTime.Now;
+            _currentSession.EndTime = DateTime.Now;
 
-            UpdateSummaries();
+            TryUpdateSummaries(ref lastSummaryUpdate);
 
             TryUpdateTimeline(ref lastTimelineUpdate);
 
-            var (currentApp, currentTitle) =
-                ActiveWindowService.GetActiveWindowInfo();
+            var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
 
-            bool isIdle =
-                IdleDetectionService.IsIdle(10);
+            bool isIdle = IdleDetectionService.IsIdle(10);
 
             if (isIdle)
             {
@@ -101,14 +96,11 @@ public partial class MainPage : ContentPage
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                ActiveApp.Text =
-                    $"App: {currentApp}";
+                ActiveApp.Text = $"App: {CleanAppName(currentApp)}";
 
-                ActiveAppLabel.Text =
-                    $"Title: {currentTitle}";
+                ActiveAppLabel.Text = $"Title: {currentTitle}";
 
-                ActiveAppDuration.Text =
-                    $"Duration: {_currentSession.FormattedDuration}";
+                ActiveAppDuration.Text = $"Duration: {_currentSession.FormattedDuration}";
             });
 
             await Task.Delay(500, token);
@@ -122,35 +114,53 @@ public partial class MainPage : ContentPage
             .TotalSeconds <= 0.5)
             return;
 
-        MainThread.BeginInvokeOnMainThread(
-            UpdateTimeline);
+        MainThread.BeginInvokeOnMainThread(UpdateTimeline);
 
         lastUpdate = DateTime.Now;
     }
 
     private void UpdateSummaries()
     {
-        _summaries.Clear();
-
         var grouped = _sessions
             .GroupBy(s => s.AppName)
-            .Select(g => new AppSummary
+            .Select(g => new
             {
                 AppName = g.Key,
-
-                TotalTime =
-                    TimeSpan.FromSeconds(
-                        g.Sum(s =>
-                            s.Duration.TotalSeconds)
-                    )
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
             })
-            .OrderByDescending(
-                s => s.TotalTime);
+            .OrderByDescending(s => s.TotalTime)
+            .ToList();
 
-        foreach (var summary in grouped)
+        foreach (var item in grouped)
         {
-            _summaries.Add(summary);
+            var existing = _summaries
+                .FirstOrDefault(s => s.AppName == item.AppName);
+
+            if (existing == null)
+            {
+                _summaries.Add(new AppSummary
+                {
+                    AppName = item.AppName,
+                    TotalTime = item.TotalTime
+                });
+            }
+            else
+            {
+                existing.TotalTime = item.TotalTime;
+            }
         }
+    }
+
+    private void TryUpdateSummaries(ref DateTime lastUpdate)
+    {
+        if ((DateTime.Now - lastUpdate).TotalSeconds <= 1)
+            return;
+
+        MainThread.BeginInvokeOnMainThread(UpdateSummaries);
+
+        lastUpdate = DateTime.Now;
     }
 
     private void UpdateTimeline()
@@ -162,8 +172,7 @@ public partial class MainPage : ContentPage
 
         foreach (var session in _sessions)
         {
-            double durationSeconds =
-                session.Duration.TotalSeconds;
+            double durationSeconds = session.Duration.TotalSeconds;
 
             double width =
                 Math.Max(
@@ -248,15 +257,7 @@ public partial class MainPage : ContentPage
 
     private string CleanAppName(string app)
     {
-        return app.ToLower() switch
-        {
-            "msedge" => "Edge",
-            "chrome" => "Chrome",
-            "devenv" => "VS",
-            "explorer" => "Explorer",
-            "idle" => "Idle",
-            _ => app
-        };
+        return AppNameFormatter.Clean(app);
     }
 
     private Color GetColorForApp(
