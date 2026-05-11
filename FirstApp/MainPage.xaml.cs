@@ -157,7 +157,7 @@ public partial class MainPage : ContentPage
         UpdateUsageChart();
         UpdateCategorySummaries();
 
-        TotalXPLabel.Text = $"Total XP: {GetTotalXP()}";
+        UpdateLevelUI();
     }
 
     private void TryUpdateSummaries(ref DateTime lastUpdate)
@@ -285,6 +285,22 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private void UpdateLevelUI()
+    {
+        int totalXp = GetTotalXP();
+
+        int level = LevelService.GetLevel(totalXp);
+        int currentLevelXp = LevelService.GetCurrentLevelXp(totalXp);
+        int xpNeeded = LevelService.GetXpNeededForNextLevel(totalXp);
+        double progress = LevelService.GetLevelProgress(totalXp);
+
+        TotalXPLabel.Text = $"Total XP: {totalXp}";
+        LevelLabel.Text = $"Level {level}";
+        LevelProgressLabel.Text = $"{currentLevelXp} / {xpNeeded} XP";
+
+        LevelProgressBar.Progress = progress;
+    }
+
     private void UpdateUsageChart()
     {
         if (UsageChartContainer == null)
@@ -295,19 +311,25 @@ public partial class MainPage : ContentPage
         if (_summaries.Count == 0)
             return;
 
-        double maxSeconds =
-            _summaries.Max(s => s.TotalTime.TotalSeconds);
+        double maxSeconds = _summaries
+            .Max(s => s.TotalTime.TotalSeconds);
 
         if (maxSeconds <= 0)
             return;
 
+        double availableWidth = UsageChartContainer.Width;
+
+        if (double.IsNaN(availableWidth) || availableWidth <= 0)
+            availableWidth = 400;
+
+        double maxBarWidth = Math.Max(60, availableWidth - 180);
+
         foreach (var summary in _summaries)
         {
-            double seconds =
-                summary.TotalTime.TotalSeconds;
+            double seconds = summary.TotalTime.TotalSeconds;
 
             double barWidth =
-                Math.Max(20, (seconds / maxSeconds) * 300);
+                Math.Max(20, (seconds / maxSeconds) * maxBarWidth);
 
             var row = new Grid
             {
@@ -318,7 +340,8 @@ public partial class MainPage : ContentPage
                 new ColumnDefinition { Width = 70 }
             },
                 ColumnSpacing = 10,
-                Padding = new Thickness(0, 4)
+                Padding = new Thickness(0, 4),
+                HorizontalOptions = LayoutOptions.Fill
             };
 
             var nameLabel = new Label
@@ -326,6 +349,13 @@ public partial class MainPage : ContentPage
                 Text = AppNameFormatter.Clean(summary.AppName),
                 TextColor = Colors.White,
                 FontSize = 14,
+                VerticalOptions = LayoutOptions.Center,
+                LineBreakMode = LineBreakMode.TailTruncation
+            };
+
+            var barContainer = new Grid
+            {
+                HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Center
             };
 
@@ -344,6 +374,8 @@ public partial class MainPage : ContentPage
                 }
             };
 
+            barContainer.Children.Add(bar);
+
             var timeLabel = new Label
             {
                 Text = summary.FormattedTime,
@@ -354,7 +386,7 @@ public partial class MainPage : ContentPage
             };
 
             row.Add(nameLabel, 0, 0);
-            row.Add(bar, 1, 0);
+            row.Add(barContainer, 1, 0);
             row.Add(timeLabel, 2, 0);
 
             UsageChartContainer.Children.Add(row);
