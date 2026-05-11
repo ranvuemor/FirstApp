@@ -79,22 +79,24 @@ public partial class MainPage : ContentPage
                 currentTitle = "User inactive";
             }
 
-            if (currentApp != _currentSession.AppName)
+            var currentCategory =
+                ActivityClassifier.Classify(currentApp, currentTitle);
+
+            _currentSession.Title = currentTitle;
+            if (currentApp != _currentSession.AppName ||
+                currentCategory != _currentSession.Category)
             {
-                _currentSession =
-                    new ActivitySession
-                    {
-                        AppName = currentApp,
-                        Title = currentTitle,
-                        StartTime = DateTime.Now,
-                        EndTime = DateTime.Now
-                    };
+                _currentSession = new ActivitySession
+                {
+                    AppName = currentApp,
+                    Title = currentTitle,
+                    StartTime = DateTime.Now,
+                    EndTime = DateTime.Now
+                };
 
                 _sessions.Add(_currentSession);
 
-                Debug.WriteLine(
-                    $"New session: {currentApp}"
-                );
+                Debug.WriteLine($"New session: {currentApp} / {currentCategory}");
             }
 
             MainThread.BeginInvokeOnMainThread(() =>

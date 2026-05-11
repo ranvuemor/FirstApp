@@ -7,11 +7,42 @@ public class ActivitySession : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public string AppName { get; set; } = "";
+    private string _appName = "";
+
+    public string AppName
+    {
+        get => _appName;
+        set
+        {
+            if (_appName == value)
+                return;
+
+            _appName = value;
+            OnPropertyChanged(nameof(AppName));
+            OnPropertyChanged(nameof(DisplayName));
+            OnPropertyChanged(nameof(Category));
+            OnPropertyChanged(nameof(XP));
+        }
+    }
 
     public string DisplayName => AppNameFormatter.Clean(AppName);
 
-    public string Title { get; set; } = "";
+    private string _title = "";
+
+    public string Title
+    {
+        get => _title;
+        set
+        {
+            if (_title == value)
+                return;
+
+            _title = value;
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Category));
+            OnPropertyChanged(nameof(XP));
+        }
+    }
 
     public DateTime StartTime { get; set; }
 
@@ -57,7 +88,7 @@ public class ActivitySession : INotifyPropertyChanged
     }
 
     public ActivityCategory Category =>
-    ActivityClassifier.Classify(AppName);
+        ActivityClassifier.Classify(AppName, Title);
 
     public int XP
     {
