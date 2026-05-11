@@ -29,6 +29,7 @@ public class ActivitySession : INotifyPropertyChanged
             OnPropertyChanged(nameof(EndTime));
             OnPropertyChanged(nameof(Duration));
             OnPropertyChanged(nameof(FormattedDuration));
+            OnPropertyChanged(nameof(XP));
         }
     }
 
@@ -53,5 +54,19 @@ public class ActivitySession : INotifyPropertyChanged
             return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
 
         return $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
+
+    public ActivityCategory Category =>
+    ActivityClassifier.Classify(AppName);
+
+    public int XP
+    {
+        get
+        {
+            int xpPerMinute =
+                ActivityClassifier.GetXpPerMinute(Category);
+
+            return (int)(Duration.TotalMinutes * xpPerMinute);
+        }
     }
 }

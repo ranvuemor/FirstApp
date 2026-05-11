@@ -494,6 +494,12 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Xamarin.Android.Glide/4.16.0.14": {
         "type": "package",
         "dependencies": {
@@ -2977,6 +2983,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Xamarin.Android.Glide/4.16.0.14": {
@@ -5464,6 +5476,12 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Xamarin.Android.Glide/4.16.0.14": {
         "type": "package",
         "dependencies": {
@@ -7947,6 +7965,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Xamarin.Android.Glide/4.16.0.14": {
@@ -10434,6 +10458,12 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Xamarin.Android.Glide/4.16.0.14": {
         "type": "package",
         "dependencies": {
@@ -12919,6 +12949,12 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Xamarin.Android.Glide/4.16.0.14": {
         "type": "package",
         "dependencies": {
@@ -15374,6 +15410,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-ios26.2/android-arm64": {
@@ -15838,6 +15880,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -16304,6 +16352,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-ios26.2/iossimulator-x64": {
@@ -16768,6 +16822,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -17234,6 +17294,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-ios26.2/win-x64": {
@@ -17698,6 +17764,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -18164,6 +18236,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-maccatalyst26.2/android-arm64": {
@@ -18628,6 +18706,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -19094,6 +19178,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-maccatalyst26.2/iossimulator-x64": {
@@ -19558,6 +19648,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -20024,6 +20120,12 @@
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
       }
     },
     "net10.0-maccatalyst26.2/win-x64": {
@@ -20488,6 +20590,12 @@
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       }
     },
@@ -21018,6 +21126,12 @@
         "build": {
           "buildTransitive/Microsoft.Maui.Resizetizer.props": {},
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Microsoft.Web.WebView2/1.0.3179.45": {
@@ -21722,6 +21836,12 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Microsoft.Web.WebView2/1.0.3179.45": {
         "type": "package",
         "build": {
@@ -22374,6 +22494,12 @@
         "build": {
           "buildTransitive/Microsoft.Maui.Resizetizer.props": {},
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Microsoft.Web.WebView2/1.0.3179.45": {
@@ -23030,6 +23156,12 @@
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
         }
       },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
+        }
+      },
       "Microsoft.Web.WebView2/1.0.3179.45": {
         "type": "package",
         "build": {
@@ -23682,6 +23814,12 @@
         "build": {
           "buildTransitive/Microsoft.Maui.Resizetizer.props": {},
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Microsoft.Web.WebView2/1.0.3179.45": {
@@ -24339,6 +24477,12 @@
         "build": {
           "buildTransitive/Microsoft.Maui.Resizetizer.props": {},
           "buildTransitive/Microsoft.Maui.Resizetizer.targets": {}
+        }
+      },
+      "Microsoft.UI.Xaml/2.8.7": {
+        "type": "package",
+        "build": {
+          "buildTransitive/Microsoft.UI.Xaml.props": {}
         }
       },
       "Microsoft.Web.WebView2/1.0.3179.45": {
@@ -25721,6 +25865,41 @@
         "tools/netframework/build/Microsoft.NET.ILLink.Tasks.props",
         "tools/netframework/build/Microsoft.NET.ILLink.targets",
         "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.UI.Xaml/2.8.7": {
+      "sha512": "GuYRY8KcB0K4IufFqxob40qUL6Gh+zi4RjHXVMENlJTRsXcVGl+QFNIyZVGbHDRgwIN8n0We9TBk0rUQP41Yig==",
+      "type": "package",
+      "path": "microsoft.ui.xaml/2.8.7",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Common.targets",
+        "build/Microsoft.UI.Xaml.props",
+        "build/MicrosoftUIXamlVersion.props",
+        "build/native/Microsoft.UI.Xaml.props",
+        "build/native/Microsoft.UI.Xaml.targets",
+        "buildTransitive/Common.targets",
+        "buildTransitive/Microsoft.UI.Xaml.props",
+        "buildTransitive/MicrosoftUIXamlVersion.props",
+        "lib/net8.0-windows10.0.22621.0/Microsoft.UI.Xaml.Projection.dll",
+        "lib/net8.0-windows10.0.22621.0/Microsoft.UI.Xaml.Projection.xml",
+        "lib/net8.0-windows10.0.22621.0/Microsoft.UI.Xaml/Themes/Generic.xaml",
+        "lib/uap10.0/Design/Microsoft.UI.Xaml.Design.dll",
+        "lib/uap10.0/Microsoft.UI.Xaml.pri",
+        "lib/uap10.0/Microsoft.UI.Xaml.winmd",
+        "lib/uap10.0/Microsoft.UI.Xaml.xml",
+        "lib/uap10.0/Microsoft.UI.Xaml/Themes/Generic.xaml",
+        "license.txt",
+        "microsoft.ui.xaml.2.8.7.nupkg.sha512",
+        "microsoft.ui.xaml.nuspec",
+        "readme.txt",
+        "tools/AppX/arm/Release/Microsoft.UI.Xaml.2.8.appx",
+        "tools/AppX/arm64/Release/Microsoft.UI.Xaml.2.8.appx",
+        "tools/AppX/x64/Release/Microsoft.UI.Xaml.2.8.appx",
+        "tools/AppX/x86/Release/Microsoft.UI.Xaml.2.8.appx",
+        "tools/VisualStudioToolsManifest.xml"
       ]
     },
     "Microsoft.Web.WebView2/1.0.3179.45": {
@@ -28971,21 +29150,25 @@
     "net10.0-android36.0": [
       "Microsoft.Extensions.Logging.Debug >= 10.0.0",
       "Microsoft.Maui.Controls >= 10.0.20",
-      "Microsoft.NET.ILLink.Tasks >= 10.0.7"
+      "Microsoft.NET.ILLink.Tasks >= 10.0.7",
+      "Microsoft.UI.Xaml >= 2.8.7"
     ],
     "net10.0-ios26.2": [
       "Microsoft.Extensions.Logging.Debug >= 10.0.0",
       "Microsoft.Maui.Controls >= 10.0.20",
-      "Microsoft.NET.ILLink.Tasks >= 10.0.7"
+      "Microsoft.NET.ILLink.Tasks >= 10.0.7",
+      "Microsoft.UI.Xaml >= 2.8.7"
     ],
     "net10.0-maccatalyst26.2": [
       "Microsoft.Extensions.Logging.Debug >= 10.0.0",
       "Microsoft.Maui.Controls >= 10.0.20",
-      "Microsoft.NET.ILLink.Tasks >= 10.0.7"
+      "Microsoft.NET.ILLink.Tasks >= 10.0.7",
+      "Microsoft.UI.Xaml >= 2.8.7"
     ],
     "net10.0-windows10.0.19041": [
       "Microsoft.Extensions.Logging.Debug >= 10.0.0",
-      "Microsoft.Maui.Controls >= 10.0.20"
+      "Microsoft.Maui.Controls >= 10.0.20",
+      "Microsoft.UI.Xaml >= 2.8.7"
     ]
   },
   "packageFolders": {
@@ -29073,6 +29256,10 @@
             "target": "Package",
             "version": "[10.0.7, )",
             "autoReferenced": true
+          },
+          "Microsoft.UI.Xaml": {
+            "target": "Package",
+            "version": "[2.8.7, )"
           }
         },
         "imports": [
@@ -29390,6 +29577,10 @@
             "target": "Package",
             "version": "[10.0.7, )",
             "autoReferenced": true
+          },
+          "Microsoft.UI.Xaml": {
+            "target": "Package",
+            "version": "[2.8.7, )"
           }
         },
         "imports": [
@@ -29707,6 +29898,10 @@
             "target": "Package",
             "version": "[10.0.7, )",
             "autoReferenced": true
+          },
+          "Microsoft.UI.Xaml": {
+            "target": "Package",
+            "version": "[2.8.7, )"
           }
         },
         "imports": [
@@ -30019,6 +30214,10 @@
           "Microsoft.Maui.Controls": {
             "target": "Package",
             "version": "[10.0.20, )"
+          },
+          "Microsoft.UI.Xaml": {
+            "target": "Package",
+            "version": "[2.8.7, )"
           }
         },
         "imports": [

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fH7yfdPJ0ww=",
+  "dgSpecHash": "cpRs1fU71J8=",
   "success": true,
   "projectFilePath": "D:\\vs projects\\FirstApp\\FirstApp\\FirstApp.csproj",
   "expectedPackageFiles": [
@@ -29,6 +29,7 @@
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.maui.graphics.win2d.winui.desktop\\10.0.20\\microsoft.maui.graphics.win2d.winui.desktop.10.0.20.nupkg.sha512",
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.maui.resizetizer\\10.0.20\\microsoft.maui.resizetizer.10.0.20.nupkg.sha512",
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.net.illink.tasks\\10.0.7\\microsoft.net.illink.tasks.10.0.7.nupkg.sha512",
+    "C:\\Users\\amish\\.nuget\\packages\\microsoft.ui.xaml\\2.8.7\\microsoft.ui.xaml.2.8.7.nupkg.sha512",
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.web.webview2\\1.0.3179.45\\microsoft.web.webview2.1.0.3179.45.nupkg.sha512",
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",
     "C:\\Users\\amish\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250909003\\microsoft.windowsappsdk.1.7.250909003.nupkg.sha512",

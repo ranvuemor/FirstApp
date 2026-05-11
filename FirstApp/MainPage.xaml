@@ -4,11 +4,12 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="FirstApp.MainPage"
-    BackgroundColor="#111827">
+    BackgroundColor="Transparent">
 
-    <ScrollView>
+    <ScrollView BackgroundColor="Transparent">
 
         <VerticalStackLayout
+            BackgroundColor="Transparent"
             Padding="20"
             Spacing="20">
 
@@ -32,8 +33,9 @@
             <!-- ACTIVE SESSION CARD -->
 
             <Border
-                BackgroundColor="#1F2937"
-                StrokeThickness="0"
+                BackgroundColor="#991F2937"
+                Stroke="#334155"
+                StrokeThickness="1"
                 Padding="16">
 
                 <Border.StrokeShape>
@@ -110,8 +112,9 @@
                 </HorizontalStackLayout>
 
                 <Border
-                    BackgroundColor="#1F2937"
-                    StrokeThickness="0"
+                    BackgroundColor="#991F2937"
+                    Stroke="#334155"
+                    StrokeThickness="1"
                     Padding="12">
 
                     <Border.StrokeShape>
@@ -131,6 +134,79 @@
 
             </VerticalStackLayout>
 
+            <!-- XP DASHBOARD -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label
+                    Text="XP Dashboard"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="White"/>
+
+                <Border
+                    BackgroundColor="#1F2937"
+                    StrokeThickness="0"
+                    Padding="16">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <Label
+                            x:Name="TotalXPLabel"
+                            Text="Total XP: 0"
+                            FontSize="28"
+                            FontAttributes="Bold"
+                            TextColor="#FBBF24"/>
+
+                        <CollectionView
+                            x:Name="CategorySummaryList"
+                            SelectionMode="None">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Grid
+                                        Padding="8"
+                                        ColumnDefinitions="*,Auto,Auto"
+                                        ColumnSpacing="14"> 
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Text="{Binding CategoryName}"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            TextColor="White"/>
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding FormattedTime}"
+                                            FontSize="14"
+                                            TextColor="#D1D5DB"/>
+
+                                        <Label
+                                            Grid.Column="2"
+                                            Text="{Binding TotalXP, StringFormat='{0} XP'}"
+                                            FontSize="14"
+                                            FontAttributes="Bold"
+                                            TextColor="#FBBF24"/>
+
+                                    </Grid>
+
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+            </VerticalStackLayout>
+
             <!-- DAILY SUMMARY -->
 
             <VerticalStackLayout Spacing="12">
@@ -142,8 +218,9 @@
                     TextColor="White"/>
 
                 <Border
-                    BackgroundColor="#1F2937"
-                    StrokeThickness="0"
+                    BackgroundColor="#991F2937"
+                    Stroke="#334155"
+                    StrokeThickness="1"
                     Padding="10">
 
                     <Border.StrokeShape>
@@ -198,8 +275,9 @@
                     TextColor="White"/>
 
                 <Border
-                    BackgroundColor="#1F2937"
-                    StrokeThickness="0"
+                    BackgroundColor="#991F2937"
+                    Stroke="#334155"
+                    StrokeThickness="1"
                     Padding="12">
 
                     <Border.StrokeShape>
@@ -225,8 +303,9 @@
                     TextColor="White"/>
 
                 <Border
-                    BackgroundColor="#1F2937"
-                    StrokeThickness="0"
+                    BackgroundColor="#991F2937"
+                    Stroke="#334155"
+                    StrokeThickness="1"
                     Padding="10">
 
                     <Border.StrokeShape>
@@ -261,6 +340,11 @@
                                         Text="{Binding FormattedDuration}"
                                         FontSize="12"
                                         TextColor="#60A5FA"/>
+
+                                    <Label
+                                        Text="{Binding XP, StringFormat='XP: {0}'}"
+                                        FontSize="12"
+                                        TextColor="#FBBF24"/>
 
                                 </VerticalStackLayout>
 

@@ -14,6 +14,8 @@ public partial class MainPage : ContentPage
 
     private readonly ObservableCollection<AppSummary> _summaries = new();
 
+    private readonly ObservableCollection<CategorySummary> _categorySummaries = new();
+
     private readonly CancellationTokenSource _cts = new();
 
     private ActivitySession _currentSession;
@@ -27,6 +29,7 @@ public partial class MainPage : ContentPage
         var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
 
         SummaryList.ItemsSource = _summaries;
+        CategorySummaryList.ItemsSource = _categorySummaries;
 
         _currentSession = new ActivitySession
         {
@@ -152,6 +155,9 @@ public partial class MainPage : ContentPage
             }
         }
         UpdateUsageChart();
+        UpdateCategorySummaries();
+
+        TotalXPLabel.Text = $"Total XP: {GetTotalXP()}";
     }
 
     private void TryUpdateSummaries(ref DateTime lastUpdate)
@@ -162,6 +168,48 @@ public partial class MainPage : ContentPage
         MainThread.BeginInvokeOnMainThread(UpdateSummaries);
 
         lastUpdate = DateTime.Now;
+    }
+
+    private void UpdateCategorySummaries()
+    {
+        var grouped = _sessions
+            .GroupBy(s => s.Category)
+            .Select(g => new
+            {
+                Category = g.Key,
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
+            })
+            .OrderByDescending(s =>
+                ActivityClassifier.GetXpPerMinute(s.Category) *
+                s.TotalTime.TotalMinutes
+            )
+            .ToList();
+
+        foreach (var item in grouped)
+        {
+            var existing = _categorySummaries
+                .FirstOrDefault(s => s.Category == item.Category);
+
+            if (existing == null)
+            {
+                _categorySummaries.Add(new CategorySummary
+                {
+                    Category = item.Category,
+                    TotalTime = item.TotalTime
+                });
+            }
+            else
+            {
+                existing.TotalTime = item.TotalTime;
+            }
+        }
+    }
+
+    private int GetTotalXP()
+    {
+        return _sessions.Sum(s => s.XP);
     }
 
     private void UpdateTimeline()
@@ -337,17 +385,16 @@ public partial class MainPage : ContentPage
         return AppNameFormatter.Clean(app);
     }
 
-    private Color GetColorForApp(
-        string appName)
+    private Color GetColorForApp(string appName)
     {
         return appName.ToLower() switch
         {
-            "msedge" => Colors.Blue,
-            "chrome" => Colors.Red,
-            "devenv" => Colors.Purple,
-            "explorer" => Colors.Green,
-            "idle" => Colors.DarkGray,
-            _ => Colors.Gray
+            "msedge" => Color.FromArgb("#CC2563EB"),
+            "chrome" => Color.FromArgb("#CCDC2626"),
+            "devenv" => Color.FromArgb("#CC7C3AED"),
+            "explorer" => Color.FromArgb("#CC16A34A"),
+            "idle" => Color.FromArgb("#CC4B5563"),
+            _ => Color.FromArgb("#CC6B7280")
         };
     }
 }

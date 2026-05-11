@@ -180,3 +180,14 @@ Xamarin.KotlinX.Coroutines.Core.aar
 Xamarin.KotlinX.Coroutines.Core.Jvm.aar
 Xamarin.KotlinX.Serialization.Core.aar
 Xamarin.KotlinX.Serialization.Core.Jvm.aar
+Uno.dll
+Uno.Foundation.dll
+Uno.UI.BindingHelper.Android.dll
+Uno.UI.Composition.dll
+Uno.UI.Dispatching.dll
+Uno.UI.dll
+Uno.UI.FluentTheme.dll
+Uno.UI.FluentTheme.v1.dll
+Uno.UI.FluentTheme.v2.dll
+Uno.UI.Toolkit.dll
+Uno.UI.BindingHelper.Android.aar
