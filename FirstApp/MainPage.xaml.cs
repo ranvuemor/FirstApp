@@ -175,10 +175,11 @@ public partial class MainPage : ContentPage
                 existing.TotalTime = item.TotalTime;
             }
         }
-        UpdateUsageChart();
         UpdateCategorySummaries();
 
         UpdateLevelUI();
+
+        UpdateUsageChart();
     }
 
     private void TryUpdateSummaries(ref DateTime lastUpdate)
@@ -263,9 +264,7 @@ public partial class MainPage : ContentPage
             {
                 content.Children.Add(new Label
                 {
-                    Text =
-                        CleanAppName(
-                            session.AppName),
+                    Text = $"{session.Category} · {session.DisplayName}",
 
                     FontSize = 10,
                     TextColor = Colors.White
@@ -273,8 +272,7 @@ public partial class MainPage : ContentPage
 
                 content.Children.Add(new Label
                 {
-                    Text =
-                        session.FormattedDuration,
+                    Text = session.FormattedDuration,
 
                     FontSize = 10,
                     TextColor = Colors.White
@@ -287,8 +285,8 @@ public partial class MainPage : ContentPage
                 HeightRequest = 40,
 
                 BackgroundColor =
-                    GetColorForApp(
-                        session.AppName),
+                    GetColorForCategory(
+                        session.Category),
 
                 Padding = 2,
                 StrokeThickness = 0,
@@ -329,10 +327,22 @@ public partial class MainPage : ContentPage
 
         UsageChartContainer.Children.Clear();
 
-        if (_summaries.Count == 0)
+        var grouped = _sessions
+            .GroupBy(s => s.Category)
+            .Select(g => new
+            {
+                Category = g.Key,
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
+            })
+            .OrderByDescending(s => s.TotalTime)
+            .ToList();
+
+        if (grouped.Count == 0)
             return;
 
-        double maxSeconds = _summaries
+        double maxSeconds = grouped
             .Max(s => s.TotalTime.TotalSeconds);
 
         if (maxSeconds <= 0)
@@ -345,9 +355,9 @@ public partial class MainPage : ContentPage
 
         double maxBarWidth = Math.Max(60, availableWidth - 180);
 
-        foreach (var summary in _summaries)
+        foreach (var item in grouped)
         {
-            double seconds = summary.TotalTime.TotalSeconds;
+            double seconds = item.TotalTime.TotalSeconds;
 
             double barWidth =
                 Math.Max(20, (seconds / maxSeconds) * maxBarWidth);
@@ -356,7 +366,7 @@ public partial class MainPage : ContentPage
             {
                 ColumnDefinitions =
             {
-                new ColumnDefinition { Width = 90 },
+                new ColumnDefinition { Width = 110 },
                 new ColumnDefinition { Width = GridLength.Star },
                 new ColumnDefinition { Width = 70 }
             },
@@ -367,9 +377,10 @@ public partial class MainPage : ContentPage
 
             var nameLabel = new Label
             {
-                Text = AppNameFormatter.Clean(summary.AppName),
+                Text = item.Category.ToString(),
                 TextColor = Colors.White,
                 FontSize = 14,
+                FontAttributes = FontAttributes.Bold,
                 VerticalOptions = LayoutOptions.Center,
                 LineBreakMode = LineBreakMode.TailTruncation
             };
@@ -384,7 +395,7 @@ public partial class MainPage : ContentPage
             {
                 WidthRequest = barWidth,
                 HeightRequest = 16,
-                BackgroundColor = GetColorForApp(summary.AppName),
+                BackgroundColor = GetColorForCategory(item.Category),
                 StrokeThickness = 0,
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.Center,
@@ -399,7 +410,7 @@ public partial class MainPage : ContentPage
 
             var timeLabel = new Label
             {
-                Text = summary.FormattedTime,
+                Text = FormatDuration(item.TotalTime),
                 TextColor = Colors.LightGray,
                 FontSize = 14,
                 HorizontalTextAlignment = TextAlignment.End,
@@ -438,16 +449,30 @@ public partial class MainPage : ContentPage
         return AppNameFormatter.Clean(app);
     }
 
-    private Color GetColorForApp(string appName)
+    private string FormatDuration(TimeSpan duration)
     {
-        return appName.ToLower() switch
+        if (duration.TotalSeconds < 60)
+            return $"{(int)duration.TotalSeconds}s";
+
+        if (duration.TotalMinutes < 60)
+            return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
+
+        return $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
+
+    private Color GetColorForCategory(ActivityCategory category)
+    {
+        return category switch
         {
-            "msedge" => Color.FromArgb("#CC2563EB"),
-            "chrome" => Color.FromArgb("#CCDC2626"),
-            "devenv" => Color.FromArgb("#CC7C3AED"),
-            "explorer" => Color.FromArgb("#CC16A34A"),
-            "idle" => Color.FromArgb("#CC4B5563"),
-            _ => Color.FromArgb("#CC6B7280")
+            ActivityCategory.Programming => Color.FromArgb("#8B5CF6"),
+            ActivityCategory.Learning => Color.FromArgb("#38BDF8"),
+            ActivityCategory.Writing => Color.FromArgb("#F59E0B"),
+            ActivityCategory.Browsing => Color.FromArgb("#06B6D4"),
+            ActivityCategory.Entertainment => Color.FromArgb("#EF4444"),
+            ActivityCategory.Gaming => Color.FromArgb("#22C55E"),
+            ActivityCategory.System => Color.FromArgb("#64748B"),
+            ActivityCategory.Idle => Color.FromArgb("#374151"),
+            _ => Color.FromArgb("#6B7280")
         };
     }
 }
