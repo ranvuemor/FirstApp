@@ -63,7 +63,9 @@ public partial class MainPage : ContentPage
 
         while (!token.IsCancellationRequested)
         {
-            _currentSession.EndTime = DateTime.Now;
+            var now = DateTime.Now;
+
+            _currentSession.EndTime = now;
 
             TryUpdateSummaries(ref lastSummaryUpdate);
 
@@ -87,11 +89,14 @@ public partial class MainPage : ContentPage
             var currentCategory =
                 ActivityClassifier.Classify(currentApp, currentTitle, currentUrl);
 
-            _currentSession.Title = currentTitle;
-            _currentSession.Url = currentUrl;
-            if (currentApp != _currentSession.AppName ||
-                currentCategory != _currentSession.Category)
-            {
+            var previousCategory = _currentSession.Category;
+            bool hasActivityChanged =
+                currentApp != _currentSession.AppName ||
+                currentCategory != previousCategory;
+
+            if (hasActivityChanged)
+            {   
+                _currentSession.EndTime = now;
                 _currentSession = new ActivitySession
                 {
                     AppName = currentApp,
@@ -104,6 +109,13 @@ public partial class MainPage : ContentPage
                 _sessions.Add(_currentSession);
 
                 Debug.WriteLine($"New session: {currentApp} / {currentCategory}");
+            }
+            else
+            {
+                // only update title/url if it is still the same activity
+                _currentSession.Title = currentTitle;
+                _currentSession.Url = currentUrl;
+                _currentSession.EndTime = now;
             }
 
             MainThread.BeginInvokeOnMainThread(() =>

@@ -16,7 +16,7 @@ public static class ActivityClassifier
         if (appName is "devenv" or "code" or "rider64" or "windowsterminal" or "cmd" or "powershell")
             return ActivityCategory.Programming;
 
-        if (appName is "msedge" or "chrome" or "firefox")
+        if (IsSupportedBrowser(appName))
         {
             if (url.Contains("youtube.com") ||
                 url.Contains("netflix.com") ||
@@ -70,6 +70,19 @@ public static class ActivityClassifier
             return ActivityCategory.System;
 
         return ActivityCategory.Unknown;
+    }
+
+    private static bool IsSupportedBrowser(string appName)
+    {
+        appName = appName.ToLower();
+
+        return appName is
+            "msedge" or
+            "chrome" or
+            "firefox" or
+            "brave" or
+            "opera" or
+            "vivaldi";
     }
 
     public static int GetXpPerMinute(ActivityCategory category)

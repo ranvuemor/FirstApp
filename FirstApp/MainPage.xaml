@@ -452,12 +452,7 @@
                                 Text="Recent app sessions recorded during this run"
                                 FontSize="13"
                                 TextColor="#94A3B8"/>
-
-                            <Label
-                                Text="{Binding Url}"
-                                FontSize="11"
-                                TextColor="#94A3B8"
-                                LineBreakMode="TailTruncation"/>
+                            
 
                         </VerticalStackLayout>
 
