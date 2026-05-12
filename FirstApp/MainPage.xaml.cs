@@ -71,18 +71,24 @@ public partial class MainPage : ContentPage
 
             var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
 
+            var currentUrl = BrowserUrlService.GetActiveBrowserUrl(currentApp) ?? "";
+
+            Debug.WriteLine($"URL: {currentUrl}");
+
             bool isIdle = IdleDetectionService.IsIdle(10);
 
             if (isIdle)
             {
                 currentApp = "Idle";
                 currentTitle = "User inactive";
+                currentUrl = "";
             }
 
             var currentCategory =
-                ActivityClassifier.Classify(currentApp, currentTitle);
+                ActivityClassifier.Classify(currentApp, currentTitle, currentUrl);
 
             _currentSession.Title = currentTitle;
+            _currentSession.Url = currentUrl;
             if (currentApp != _currentSession.AppName ||
                 currentCategory != _currentSession.Category)
             {
@@ -90,6 +96,7 @@ public partial class MainPage : ContentPage
                 {
                     AppName = currentApp,
                     Title = currentTitle,
+                    Url = currentUrl,
                     StartTime = DateTime.Now,
                     EndTime = DateTime.Now
                 };

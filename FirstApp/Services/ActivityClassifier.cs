@@ -4,10 +4,11 @@ namespace FirstApp.Services;
 
 public static class ActivityClassifier
 {
-    public static ActivityCategory Classify(string appName, string title)
+    public static ActivityCategory Classify(string appName, string title, string url)
     {
         appName = appName?.ToLower() ?? "";
         title = title?.ToLower() ?? "";
+        url = url?.ToLower() ?? "";
 
         if (appName == "idle")
             return ActivityCategory.Idle;
@@ -17,17 +18,47 @@ public static class ActivityClassifier
 
         if (appName is "msedge" or "chrome" or "firefox")
         {
-            if (title.Contains("youtube") || title.Contains("netflix") || title.Contains("twitch"))
+            if (url.Contains("youtube.com") ||
+                url.Contains("netflix.com") ||
+                url.Contains("twitch.tv"))
                 return ActivityCategory.Entertainment;
 
-            if (title.Contains("github") || title.Contains("stackoverflow") || title.Contains("stack overflow") || title.Contains("learn.microsoft"))
+            if (url.Contains("github.com") ||
+                url.Contains("stackoverflow.com") ||
+                url.Contains("learn.microsoft.com"))
                 return ActivityCategory.Programming;
 
-            if (title.Contains("chatgpt") || title.Contains("wikipedia") || title.Contains("coursera") || title.Contains("udemy"))
+            if (url.Contains("chat.openai.com") ||
+                url.Contains("chatgpt.com") ||
+                url.Contains("openai.com") ||
+                url.Contains("claude.ai") ||
+                url.Contains("perplexity.ai") ||
+                url.Contains("gemini.google.com"))
                 return ActivityCategory.Learning;
 
-            if (title.Contains("google docs") || title.Contains("notion") || title.Contains("overleaf"))
+            if (url.Contains("docs.google.com") ||
+                url.Contains("notion.so") ||
+                url.Contains("overleaf.com"))
                 return ActivityCategory.Writing;
+
+            // fallback to title if URL was not detected
+            if (title.Contains("youtube") ||
+                title.Contains("netflix") ||
+                title.Contains("twitch"))
+                return ActivityCategory.Entertainment;
+
+            if (title.Contains("github") ||
+                title.Contains("stackoverflow") ||
+                title.Contains("stack overflow") ||
+                title.Contains("learn.microsoft"))
+                return ActivityCategory.Programming;
+
+            if (title.Contains("chatgpt") ||
+                title.Contains("openai") ||
+                title.Contains("claude") ||
+                title.Contains("perplexity") ||
+                title.Contains("gemini"))
+                return ActivityCategory.Learning;
 
             return ActivityCategory.Browsing;
         }

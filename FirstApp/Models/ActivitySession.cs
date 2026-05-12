@@ -7,6 +7,23 @@ public class ActivitySession : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    private string _url = "";
+
+    public string Url
+    {
+        get => _url;
+        set
+        {
+            if (_url == value)
+                return;
+
+            _url = value;
+            OnPropertyChanged(nameof(Url));
+            OnPropertyChanged(nameof(Category));
+            OnPropertyChanged(nameof(XP));
+        }
+    }
+
     private string _appName = "";
 
     public string AppName
@@ -88,7 +105,7 @@ public class ActivitySession : INotifyPropertyChanged
     }
 
     public ActivityCategory Category =>
-        ActivityClassifier.Classify(AppName, Title);
+        ActivityClassifier.Classify(AppName, Title, Url);
 
     public int XP
     {
