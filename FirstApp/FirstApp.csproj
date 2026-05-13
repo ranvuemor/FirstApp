@@ -66,15 +66,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FlaUI.Core" Version="5.0.0" />
-		<PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Platforms\Windows\Services\" />
+	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+		<PackageReference Include="FlaUI.Core" Version="5.0.0" />
+		<PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
 	</ItemGroup>
 
 </Project>
