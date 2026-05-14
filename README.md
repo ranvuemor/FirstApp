@@ -134,6 +134,7 @@ These APIs allow the app to detect the active window, process name, window title
 
 ## Project Structure
 
+```text
 FirstApp/
 ├── Models/
 │   ├── ActivitySession.cs
@@ -158,6 +159,7 @@ FirstApp/
 ├── MainPage.xaml
 ├── MainPage.xaml.cs
 └── MauiProgram.cs
+```
 
 ---
 
