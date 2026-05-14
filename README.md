@@ -190,3 +190,11 @@ The long-term vision is to build a personal “App Replay” dashboard that help
 - The dashboard currently loads saved sessions directly from the local database
 - Long-term use will require better date filtering and data management
 - Timeline performance may need optimization when many sessions are recorded
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+Copyright (c) 2026 Amish Kushwaha.
