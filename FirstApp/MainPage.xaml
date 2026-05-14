@@ -339,7 +339,7 @@
 
             </Border>
 
-            <!-- DAILY SUMMARY -->
+            <!-- ACTIVITY SUMMARY -->
 
             <Border
                 BackgroundColor="#111827"
@@ -354,7 +354,7 @@
                 <VerticalStackLayout Spacing="12">
 
                     <Label
-                        Text="Daily Summary"
+                        Text="Acitivity Summary"
                         FontSize="22"
                         FontAttributes="Bold"
                         TextColor="#F8FAFC"/>

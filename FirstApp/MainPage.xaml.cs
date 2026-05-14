@@ -1,8 +1,6 @@
 ﻿using FirstApp.Models;
 using FirstApp.Services;
-
 using Microsoft.Maui.Controls.Shapes;
-
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -11,14 +9,13 @@ namespace FirstApp;
 public partial class MainPage : ContentPage
 {
     private readonly ObservableCollection<ActivitySession> _sessions = new();
-
     private readonly ObservableCollection<AppSummary> _summaries = new();
-
     private readonly ObservableCollection<CategorySummary> _categorySummaries = new();
 
+    private readonly ActivityDatabaseService _database = new();
     private readonly CancellationTokenSource _cts = new();
 
-    private ActivitySession _currentSession;
+    private ActivitySession _currentSession = null!;
 
     private double _timelineZoom = 2;
 
@@ -26,34 +23,65 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
 
-        var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
-
         SummaryList.ItemsSource = _summaries;
         CategorySummaryList.ItemsSource = _categorySummaries;
-
-        _currentSession = new ActivitySession
-        {
-            AppName = currentApp,
-            Title = currentTitle,
-            StartTime = DateTime.Now,
-            EndTime = DateTime.Now
-        };
-
-        _sessions.Add(_currentSession);
-
         SessionList.ItemsSource = _sessions;
 
-        UpdateSummaries();
-        UpdateTimeline();
-
-        _ = StartTracking(_cts.Token);
+        _ = InitializeAsync();
     }
 
-    protected override void OnDisappearing()
+    private async Task InitializeAsync()
+    {
+        try
+        {
+            var savedSessions = await _database.GetSessionsAsync();
+
+            foreach (var session in savedSessions)
+                _sessions.Add(session);
+
+            var now = DateTime.Now;
+            var currentActivity = GetCurrentActivity();
+
+            _currentSession = new ActivitySession
+            {
+                AppName = currentActivity.AppName,
+                Title = currentActivity.Title,
+                Url = currentActivity.Url,
+                StartTime = now,
+                EndTime = now
+            };
+
+            _sessions.Add(_currentSession);
+
+            UpdateSummaries();
+            UpdateTimeline();
+
+            _ = StartTracking(_cts.Token);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Initialization failed: {ex.Message}");
+        }
+    }
+
+    protected override async void OnDisappearing()
     {
         base.OnDisappearing();
 
         _cts.Cancel();
+
+        if (_currentSession == null)
+            return;
+
+        try
+        {
+            _currentSession.EndTime = DateTime.Now;
+            await _database.SaveSessionAsync(_currentSession);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to save session on exit: {ex.Message}");
+        }
     }
 
     private async Task StartTracking(CancellationToken token)
@@ -63,84 +91,165 @@ public partial class MainPage : ContentPage
 
         while (!token.IsCancellationRequested)
         {
-            var now = DateTime.Now;
-
-            _currentSession.EndTime = now;
-
-            TryUpdateSummaries(ref lastSummaryUpdate);
-
-            TryUpdateTimeline(ref lastTimelineUpdate);
-
-            var (currentApp, currentTitle) = ActiveWindowService.GetActiveWindowInfo();
-
-            var currentUrl = BrowserUrlService.GetActiveBrowserUrl(currentApp) ?? "";
-
-            Debug.WriteLine($"URL: {currentUrl}");
-
-            bool isIdle = IdleDetectionService.IsIdle(10);
-
-            if (isIdle)
+            try
             {
-                currentApp = "Idle";
-                currentTitle = "User inactive";
-                currentUrl = "";
-            }
+                var now = DateTime.Now;
 
-            var currentCategory =
-                ActivityClassifier.Classify(currentApp, currentTitle, currentUrl);
-
-            var previousCategory = _currentSession.Category;
-            bool hasActivityChanged =
-                currentApp != _currentSession.AppName ||
-                currentCategory != previousCategory;
-
-            if (hasActivityChanged)
-            {   
                 _currentSession.EndTime = now;
-                _currentSession = new ActivitySession
+
+                TryUpdateSummaries(ref lastSummaryUpdate);
+                TryUpdateTimeline(ref lastTimelineUpdate);
+
+                var currentActivity = GetCurrentActivity();
+
+                Debug.WriteLine($"URL: {currentActivity.Url}");
+
+                var currentCategory = ActivityClassifier.Classify(
+                    currentActivity.AppName,
+                    currentActivity.Title,
+                    currentActivity.Url
+                );
+
+                var previousCategory = _currentSession.Category;
+
+                bool hasActivityChanged =
+                    currentActivity.AppName != _currentSession.AppName ||
+                    currentCategory != previousCategory;
+
+                if (hasActivityChanged)
                 {
-                    AppName = currentApp,
-                    Title = currentTitle,
-                    Url = currentUrl,
-                    StartTime = DateTime.Now,
-                    EndTime = DateTime.Now
-                };
+                    await SwitchToNewSessionAsync(
+                        currentActivity.AppName,
+                        currentActivity.Title,
+                        currentActivity.Url,
+                        now,
+                        currentCategory
+                    );
+                }
+                else
+                {
+                    UpdateCurrentSession(
+                        currentActivity.Title,
+                        currentActivity.Url,
+                        now
+                    );
+                }
 
-                _sessions.Add(_currentSession);
-
-                Debug.WriteLine($"New session: {currentApp} / {currentCategory}");
+                UpdateActiveActivityUI(currentActivity);
             }
-            else
+            catch (OperationCanceledException)
             {
-                // only update title/url if it is still the same activity
-                _currentSession.Title = currentTitle;
-                _currentSession.Url = currentUrl;
-                _currentSession.EndTime = now;
+                break;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Tracking error: {ex.Message}");
             }
 
-            MainThread.BeginInvokeOnMainThread(() =>
+            try
             {
-                ActiveApp.Text = $"App: {CleanAppName(currentApp)}";
-
-                ActiveAppLabel.Text = $"Title: {currentTitle}";
-
-                ActiveAppDuration.Text = $"Duration: {_currentSession.FormattedDuration}";
-            });
-
-            await Task.Delay(500, token);
+                await Task.Delay(500, token);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
     }
 
-    private void TryUpdateTimeline(
-        ref DateTime lastUpdate)
+    private (string AppName, string Title, string Url) GetCurrentActivity()
     {
-        if ((DateTime.Now - lastUpdate)
-            .TotalSeconds <= 0.5)
+        var (appName, title) = ActiveWindowService.GetActiveWindowInfo();
+
+        string url = BrowserUrlService.GetActiveBrowserUrl(appName) ?? "";
+
+        bool isIdle = IdleDetectionService.IsIdle(10);
+
+        if (isIdle)
+        {
+            appName = "Idle";
+            title = "User inactive";
+            url = "";
+        }
+
+        return (appName, title, url);
+    }
+
+    private async Task SwitchToNewSessionAsync(
+        string appName,
+        string title,
+        string url,
+        DateTime now,
+        ActivityCategory category)
+    {
+        _currentSession.EndTime = now;
+
+        try
+        {
+            await _database.SaveSessionAsync(_currentSession);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to save session: {ex.Message}");
+        }
+
+        _currentSession = new ActivitySession
+        {
+            AppName = appName,
+            Title = title,
+            Url = url,
+            StartTime = now,
+            EndTime = now
+        };
+
+        _sessions.Add(_currentSession);
+
+        Debug.WriteLine($"New session: {appName} / {category}");
+    }
+
+    private void UpdateCurrentSession(
+        string title,
+        string url,
+        DateTime now)
+    {
+        _currentSession.Title = title;
+        _currentSession.Url = url;
+        _currentSession.EndTime = now;
+    }
+
+    private void UpdateActiveActivityUI(
+        (string AppName, string Title, string Url) activity)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            ActiveApp.Text = $"App: {CleanAppName(activity.AppName)}";
+            ActiveAppLabel.Text = $"Title: {activity.Title}";
+            ActiveAppDuration.Text = $"Duration: {_currentSession.FormattedDuration}";
+        });
+    }
+
+    private void TryUpdateTimeline(ref DateTime lastUpdate)
+    {
+        var now = DateTime.Now;
+
+        if ((now - lastUpdate).TotalSeconds <= 0.5)
             return;
 
         MainThread.BeginInvokeOnMainThread(UpdateTimeline);
 
-        lastUpdate = DateTime.Now;
+        lastUpdate = now;
+    }
+
+    private void TryUpdateSummaries(ref DateTime lastUpdate)
+    {
+        var now = DateTime.Now;
+
+        if ((now - lastUpdate).TotalSeconds <= 1)
+            return;
+
+        MainThread.BeginInvokeOnMainThread(UpdateSummaries);
+
+        lastUpdate = now;
     }
 
     private void UpdateSummaries()
@@ -175,21 +284,10 @@ public partial class MainPage : ContentPage
                 existing.TotalTime = item.TotalTime;
             }
         }
+
         UpdateCategorySummaries();
-
         UpdateLevelUI();
-
         UpdateUsageChart();
-    }
-
-    private void TryUpdateSummaries(ref DateTime lastUpdate)
-    {
-        if ((DateTime.Now - lastUpdate).TotalSeconds <= 1)
-            return;
-
-        MainThread.BeginInvokeOnMainThread(UpdateSummaries);
-
-        lastUpdate = DateTime.Now;
     }
 
     private void UpdateCategorySummaries()
@@ -243,65 +341,69 @@ public partial class MainPage : ContentPage
 
         foreach (var session in _sessions)
         {
-            double durationSeconds = session.Duration.TotalSeconds;
+            double width = GetTimelineBlockWidth(session);
 
-            double width =
-                Math.Max(
-                    30,
-                    Math.Min(
-                        500,
-                        durationSeconds * _timelineZoom
-                    )
-                );
-
-            var content = new VerticalStackLayout
-            {
-                Padding = 2,
-                Spacing = 0
-            };
-
-            if (width >= 100)
-            {
-                content.Children.Add(new Label
-                {
-                    Text = $"{session.Category} · {session.DisplayName}",
-
-                    FontSize = 10,
-                    TextColor = Colors.White
-                });
-
-                content.Children.Add(new Label
-                {
-                    Text = session.FormattedDuration,
-
-                    FontSize = 10,
-                    TextColor = Colors.White
-                });
-            }
+            var content = CreateTimelineBlockContent(session, width);
 
             var border = new Border
             {
                 WidthRequest = width,
                 HeightRequest = 40,
-
-                BackgroundColor =
-                    GetColorForCategory(
-                        session.Category),
-
+                BackgroundColor = GetColorForCategory(session.Category),
                 Padding = 2,
                 StrokeThickness = 0,
-
-                StrokeShape =
-                    new RoundRectangle
-                    {
-                        CornerRadius = 6
-                    },
-
+                StrokeShape = new RoundRectangle
+                {
+                    CornerRadius = 6
+                },
                 Content = content
             };
 
             TimelineContainer.Children.Add(border);
         }
+    }
+
+    private double GetTimelineBlockWidth(ActivitySession session)
+    {
+        double durationSeconds = session.Duration.TotalSeconds;
+
+        return Math.Max(
+            30,
+            Math.Min(
+                500,
+                durationSeconds * _timelineZoom
+            )
+        );
+    }
+
+    private VerticalStackLayout CreateTimelineBlockContent(
+        ActivitySession session,
+        double width)
+    {
+        var content = new VerticalStackLayout
+        {
+            Padding = 2,
+            Spacing = 0
+        };
+
+        if (width < 100)
+            return content;
+
+        content.Children.Add(new Label
+        {
+            Text = $"{session.Category} · {session.DisplayName}",
+            FontSize = 10,
+            TextColor = Colors.White
+        });
+
+        content.Children.Add(new Label
+        {
+            Text = session.FormattedDuration,
+            FontSize = 10,
+            TextColor = Colors.White
+        });
+
+        return content;
     }
 
     private void UpdateLevelUI()
@@ -316,7 +418,6 @@ public partial class MainPage : ContentPage
         TotalXPLabel.Text = $"Total XP: {totalXp}";
         LevelLabel.Text = $"Level {level}";
         LevelProgressLabel.Text = $"{currentLevelXp} / {xpNeeded} XP";
-
         LevelProgressBar.Progress = progress;
     }
 
@@ -342,105 +443,114 @@ public partial class MainPage : ContentPage
         if (grouped.Count == 0)
             return;
 
-        double maxSeconds = grouped
-            .Max(s => s.TotalTime.TotalSeconds);
+        double maxSeconds = grouped.Max(s => s.TotalTime.TotalSeconds);
 
         if (maxSeconds <= 0)
             return;
 
-        double availableWidth = UsageChartContainer.Width;
-
-        if (double.IsNaN(availableWidth) || availableWidth <= 0)
-            availableWidth = 400;
-
-        double maxBarWidth = Math.Max(60, availableWidth - 180);
-
         foreach (var item in grouped)
         {
-            double seconds = item.TotalTime.TotalSeconds;
-
-            double barWidth =
-                Math.Max(20, (seconds / maxSeconds) * maxBarWidth);
-
-            var row = new Grid
-            {
-                ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = 110 },
-                new ColumnDefinition { Width = GridLength.Star },
-                new ColumnDefinition { Width = 70 }
-            },
-                ColumnSpacing = 10,
-                Padding = new Thickness(0, 4),
-                HorizontalOptions = LayoutOptions.Fill
-            };
-
-            var nameLabel = new Label
-            {
-                Text = item.Category.ToString(),
-                TextColor = Colors.White,
-                FontSize = 14,
-                FontAttributes = FontAttributes.Bold,
-                VerticalOptions = LayoutOptions.Center,
-                LineBreakMode = LineBreakMode.TailTruncation
-            };
-
-            var barContainer = new Grid
-            {
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            var bar = new Border
-            {
-                WidthRequest = barWidth,
-                HeightRequest = 16,
-                BackgroundColor = GetColorForCategory(item.Category),
-                StrokeThickness = 0,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Center,
-
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = 8
-                }
-            };
-
-            barContainer.Children.Add(bar);
-
-            var timeLabel = new Label
-            {
-                Text = FormatDuration(item.TotalTime),
-                TextColor = Colors.LightGray,
-                FontSize = 14,
-                HorizontalTextAlignment = TextAlignment.End,
-                VerticalOptions = LayoutOptions.Center
-            };
-
-            row.Add(nameLabel, 0, 0);
-            row.Add(barContainer, 1, 0);
-            row.Add(timeLabel, 2, 0);
+            var row = CreateUsageChartRow(
+                item.Category,
+                item.TotalTime,
+                maxSeconds
+);
 
             UsageChartContainer.Children.Add(row);
         }
     }
 
-    private void ZoomInClicked(
-        object sender,
-        EventArgs e)
+    private Grid CreateUsageChartRow( ActivityCategory category, TimeSpan totalTime,
+                                      double maxSeconds)
+    {
+        double seconds = totalTime.TotalSeconds;
+
+        double percentage = maxSeconds <= 0
+            ? 0
+            : seconds / maxSeconds;
+
+        percentage = Math.Clamp(percentage, 0, 1);
+
+        var row = new Grid
+        {
+            ColumnDefinitions =
+        {
+            new ColumnDefinition { Width = 130 },
+            new ColumnDefinition { Width = GridLength.Star },
+            new ColumnDefinition { Width = 70 }
+        },
+            ColumnSpacing = 10,
+            Padding = new Thickness(0, 4),
+            HorizontalOptions = LayoutOptions.Fill
+        };
+
+        var nameLabel = new Label
+        {
+            Text = category.ToString(),
+            TextColor = Colors.White,
+            FontSize = 14,
+            FontAttributes = FontAttributes.Bold,
+            VerticalOptions = LayoutOptions.Center,
+            LineBreakMode = LineBreakMode.TailTruncation
+        };
+
+        var barContainer = new Grid
+        {
+            HeightRequest = 16,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Center,
+            ColumnDefinitions =
+        {
+            new ColumnDefinition
+            {
+                Width = new GridLength(Math.Max(percentage, 0.001), GridUnitType.Star)
+            },
+            new ColumnDefinition
+            {
+                Width = new GridLength(Math.Max(1 - percentage, 0.001), GridUnitType.Star)
+            }
+        }
+        };
+
+        var bar = new Border
+        {
+            BackgroundColor = GetColorForCategory(category),
+            StrokeThickness = 0,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Fill,
+            StrokeShape = new RoundRectangle
+            {
+                CornerRadius = 8
+            }
+        };
+
+        barContainer.Add(bar, 0, 0);
+
+        var timeLabel = new Label
+        {
+            Text = FormatDuration(totalTime),
+            TextColor = Colors.LightGray,
+            FontSize = 14,
+            HorizontalTextAlignment = TextAlignment.End,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        row.Add(nameLabel, 0, 0);
+        row.Add(barContainer, 1, 0);
+        row.Add(timeLabel, 2, 0);
+
+        return row;
+    }
+
+    private void ZoomInClicked(object sender, EventArgs e)
     {
         _timelineZoom += 1;
-
         UpdateTimeline();
     }
 
-    private void ZoomOutClicked(
-        object sender,
-        EventArgs e)
+    private void ZoomOutClicked(object sender, EventArgs e)
     {
-        _timelineZoom =
-            Math.Max(1, _timelineZoom - 1);
-
+        _timelineZoom = Math.Max(1, _timelineZoom - 1);
         UpdateTimeline();
     }
 

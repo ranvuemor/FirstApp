@@ -1,28 +1,15 @@
 ﻿using FirstApp.Services;
+using SQLite;
 using System.ComponentModel;
 
 namespace FirstApp.Models;
 
 public class ActivitySession : INotifyPropertyChanged
 {
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    private string _url = "";
-
-    public string Url
-    {
-        get => _url;
-        set
-        {
-            if (_url == value)
-                return;
-
-            _url = value;
-            OnPropertyChanged(nameof(Url));
-            OnPropertyChanged(nameof(Category));
-            OnPropertyChanged(nameof(XP));
-        }
-    }
 
     private string _appName = "";
 
@@ -35,6 +22,7 @@ public class ActivitySession : INotifyPropertyChanged
                 return;
 
             _appName = value;
+
             OnPropertyChanged(nameof(AppName));
             OnPropertyChanged(nameof(DisplayName));
             OnPropertyChanged(nameof(Category));
@@ -55,7 +43,26 @@ public class ActivitySession : INotifyPropertyChanged
                 return;
 
             _title = value;
+
             OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Category));
+            OnPropertyChanged(nameof(XP));
+        }
+    }
+
+    private string _url = "";
+
+    public string Url
+    {
+        get => _url;
+        set
+        {
+            if (_url == value)
+                return;
+
+            _url = value;
+
+            OnPropertyChanged(nameof(Url));
             OnPropertyChanged(nameof(Category));
             OnPropertyChanged(nameof(XP));
         }
@@ -74,16 +81,36 @@ public class ActivitySession : INotifyPropertyChanged
                 return;
 
             _endTime = value;
+
             OnPropertyChanged(nameof(EndTime));
             OnPropertyChanged(nameof(Duration));
             OnPropertyChanged(nameof(FormattedDuration));
+            OnPropertyChanged(nameof(Category));
             OnPropertyChanged(nameof(XP));
         }
     }
 
+    [Ignore]
     public TimeSpan Duration => EndTime - StartTime;
 
+    [Ignore]
     public string FormattedDuration => FormatDuration(Duration);
+
+    [Ignore]
+    public ActivityCategory Category =>
+        ActivityClassifier.Classify(AppName, Title, Url);
+
+    [Ignore]
+    public int XP
+    {
+        get
+        {
+            int xpPerMinute =
+                ActivityClassifier.GetXpPerMinute(Category);
+
+            return (int)(Duration.TotalMinutes * xpPerMinute);
+        }
+    }
 
     private void OnPropertyChanged(string propertyName)
     {
@@ -102,19 +129,5 @@ public class ActivitySession : INotifyPropertyChanged
             return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
 
         return $"{(int)duration.TotalHours}h {duration.Minutes}m";
-    }
-
-    public ActivityCategory Category =>
-        ActivityClassifier.Classify(AppName, Title, Url);
-
-    public int XP
-    {
-        get
-        {
-            int xpPerMinute =
-                ActivityClassifier.GetXpPerMinute(Category);
-
-            return (int)(Duration.TotalMinutes * xpPerMinute);
-        }
     }
 }
