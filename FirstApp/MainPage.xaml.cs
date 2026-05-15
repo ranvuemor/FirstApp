@@ -17,6 +17,11 @@ public partial class MainPage : ContentPage
 
     private ActivitySession _currentSession = null!;
 
+    private IEnumerable<ActivitySession> GetVisibleSessions()
+    {
+        return _sessions.Where(s => s.StartTime.Date == DateTime.Today);
+    }
+
     private double _timelineZoom = 2;
 
     public MainPage()
@@ -254,7 +259,7 @@ public partial class MainPage : ContentPage
 
     private void UpdateSummaries()
     {
-        var grouped = _sessions
+        var grouped = GetVisibleSessions()
             .GroupBy(s => s.AppName)
             .Select(g => new
             {
@@ -292,7 +297,7 @@ public partial class MainPage : ContentPage
 
     private void UpdateCategorySummaries()
     {
-        var grouped = _sessions
+        var grouped = GetVisibleSessions()
             .GroupBy(s => s.Category)
             .Select(g => new
             {
@@ -329,7 +334,7 @@ public partial class MainPage : ContentPage
 
     private int GetTotalXP()
     {
-        return _sessions.Sum(s => s.XP);
+        return GetVisibleSessions().Sum(s => s.XP);
     }
 
     private void UpdateTimeline()
@@ -339,7 +344,7 @@ public partial class MainPage : ContentPage
 
         TimelineContainer.Children.Clear();
 
-        foreach (var session in _sessions)
+        foreach (var session in GetVisibleSessions())
         {
             double width = GetTimelineBlockWidth(session);
 
@@ -428,7 +433,7 @@ public partial class MainPage : ContentPage
 
         UsageChartContainer.Children.Clear();
 
-        var grouped = _sessions
+        var grouped = GetVisibleSessions()
             .GroupBy(s => s.Category)
             .Select(g => new
             {
