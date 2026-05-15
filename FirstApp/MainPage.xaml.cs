@@ -16,13 +16,32 @@ public partial class MainPage : ContentPage
     private readonly CancellationTokenSource _cts = new();
 
     private ActivitySession _currentSession = null!;
+    private readonly ObservableCollection<ActivitySession> _visibleSessions = new();
 
     private IEnumerable<ActivitySession> GetVisibleSessions()
     {
-        return _sessions.Where(s => s.StartTime.Date == DateTime.Today);
+        var today = DateTime.Today;
+
+        return _selectedDateFilter switch
+        {
+            DateFilter.Today => _sessions
+                .Where(s => s.StartTime.Date == today),
+
+            DateFilter.Yesterday => _sessions
+                .Where(s => s.StartTime.Date == today.AddDays(-1)),
+
+            DateFilter.ThisWeek => _sessions
+                .Where(s => s.StartTime.Date >= GetStartOfWeek(today)),
+
+            DateFilter.AllTime => _sessions,
+
+            _ => _sessions.Where(s => s.StartTime.Date == today)
+        };
     }
 
     private double _timelineZoom = 2;
+
+    private DateFilter _selectedDateFilter = DateFilter.Today;
 
     public MainPage()
     {
@@ -30,7 +49,7 @@ public partial class MainPage : ContentPage
 
         SummaryList.ItemsSource = _summaries;
         CategorySummaryList.ItemsSource = _categorySummaries;
-        SessionList.ItemsSource = _sessions;
+        SessionList.ItemsSource = _visibleSessions;
 
         _ = InitializeAsync();
     }
@@ -58,8 +77,7 @@ public partial class MainPage : ContentPage
 
             _sessions.Add(_currentSession);
 
-            UpdateSummaries();
-            UpdateTimeline();
+            RefreshDashboard();
 
             _ = StartTracking(_cts.Token);
         }
@@ -67,6 +85,136 @@ public partial class MainPage : ContentPage
         {
             Debug.WriteLine($"Initialization failed: {ex.Message}");
         }
+    }
+
+    private bool IsSessionVisibleForCurrentFilter(ActivitySession session)
+    {
+        var today = DateTime.Today;
+
+        return _selectedDateFilter switch
+        {
+            DateFilter.Today =>
+                session.StartTime.Date == today,
+
+            DateFilter.Yesterday =>
+                session.StartTime.Date == today.AddDays(-1),
+
+            DateFilter.ThisWeek =>
+                session.StartTime.Date >= GetStartOfWeek(today),
+
+            DateFilter.AllTime =>
+                true,
+
+            _ =>
+                session.StartTime.Date == today
+        };
+    }
+
+    private DateTime GetStartOfWeek(DateTime date)
+    {
+        int diff = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
+        return date.AddDays(-diff).Date;
+    }
+
+    private void RefreshDashboard()
+    {
+        RebuildVisibleSessions();
+        RebuildSummaries();
+        RebuildCategorySummaries();
+
+        UpdateLevelUI();
+        UpdateUsageChart();
+        UpdateTimeline();
+        UpdateDateFilterButtonColors();
+    }
+
+    private void RebuildVisibleSessions()
+    {
+        _visibleSessions.Clear();
+
+        foreach (var session in GetVisibleSessions().OrderByDescending(s => s.StartTime))
+        {
+            _visibleSessions.Add(session);
+        }
+    }
+
+    private void RebuildSummaries()
+    {
+        _summaries.Clear();
+
+        var grouped = GetVisibleSessions()
+            .GroupBy(s => s.AppName)
+            .Select(g => new
+            {
+                AppName = g.Key,
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
+            })
+            .OrderByDescending(s => s.TotalTime)
+            .ToList();
+
+        foreach (var item in grouped)
+        {
+            _summaries.Add(new AppSummary
+            {
+                AppName = item.AppName,
+                TotalTime = item.TotalTime
+            });
+        }
+    }
+
+    private void RebuildCategorySummaries()
+    {
+        _categorySummaries.Clear();
+
+        var grouped = GetVisibleSessions()
+            .GroupBy(s => s.Category)
+            .Select(g => new
+            {
+                Category = g.Key,
+                TotalTime = TimeSpan.FromSeconds(
+                    g.Sum(s => s.Duration.TotalSeconds)
+                )
+            })
+            .OrderByDescending(s =>
+                ActivityClassifier.GetXpPerMinute(s.Category) *
+                s.TotalTime.TotalMinutes
+            )
+            .ToList();
+
+        foreach (var item in grouped)
+        {
+            _categorySummaries.Add(new CategorySummary
+            {
+                Category = item.Category,
+                TotalTime = item.TotalTime
+            });
+        }
+    }
+
+    private void TodayFilterClicked(object sender, EventArgs e)
+    {
+        _selectedDateFilter = DateFilter.Today;
+        RefreshDashboard();
+    }
+
+    private void YesterdayFilterClicked(object sender, EventArgs e)
+    {
+        _selectedDateFilter = DateFilter.Yesterday;
+        RefreshDashboard();
+    }
+
+    private void ThisWeekFilterClicked(object sender, EventArgs e)
+    {
+        _selectedDateFilter = DateFilter.ThisWeek;
+        RefreshDashboard();
+    }
+
+    private void AllTimeFilterClicked(object sender, EventArgs e)
+    {
+        _selectedDateFilter = DateFilter.AllTime;
+        RefreshDashboard();
     }
 
     protected override async void OnDisappearing()
@@ -198,7 +346,7 @@ public partial class MainPage : ContentPage
             Debug.WriteLine($"Failed to save session: {ex.Message}");
         }
 
-        _currentSession = new ActivitySession
+        var newSession = new ActivitySession
         {
             AppName = appName,
             Title = title,
@@ -207,7 +355,17 @@ public partial class MainPage : ContentPage
             EndTime = now
         };
 
-        _sessions.Add(_currentSession);
+        _currentSession = newSession;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _sessions.Add(newSession);
+
+            if (IsSessionVisibleForCurrentFilter(newSession))
+            {
+                _visibleSessions.Insert(0, newSession);
+            }
+        });
 
         Debug.WriteLine($"New session: {appName} / {category}");
     }
@@ -465,8 +623,10 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private Grid CreateUsageChartRow( ActivityCategory category, TimeSpan totalTime,
-                                      double maxSeconds)
+    private Grid CreateUsageChartRow( 
+        ActivityCategory category, 
+        TimeSpan totalTime,
+        double maxSeconds)
     {
         double seconds = totalTime.TotalSeconds;
 
@@ -573,6 +733,32 @@ public partial class MainPage : ContentPage
             return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
 
         return $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
+
+    private void UpdateDateFilterButtonColors()
+    {
+        Color selectedColor = Color.FromArgb("#2563EB");
+        Color normalColor = Color.FromArgb("#1E293B");
+
+        TodayButton.BackgroundColor =
+            _selectedDateFilter == DateFilter.Today
+                ? selectedColor
+                : normalColor;
+
+        YesterdayButton.BackgroundColor =
+            _selectedDateFilter == DateFilter.Yesterday
+                ? selectedColor
+                : normalColor;
+
+        ThisWeekButton.BackgroundColor =
+            _selectedDateFilter == DateFilter.ThisWeek
+                ? selectedColor
+                : normalColor;
+
+        AllTimeButton.BackgroundColor =
+            _selectedDateFilter == DateFilter.AllTime
+                ? selectedColor
+                : normalColor;
     }
 
     private Color GetColorForCategory(ActivityCategory category)
