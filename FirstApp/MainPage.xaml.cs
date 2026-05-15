@@ -459,7 +459,7 @@ public partial class MainPage : ContentPage
                 item.Category,
                 item.TotalTime,
                 maxSeconds
-);
+            );
 
             UsageChartContainer.Children.Add(row);
         }
