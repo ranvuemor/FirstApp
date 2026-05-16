@@ -43,6 +43,10 @@ public partial class MainPage : ContentPage
 
     private DateFilter _selectedDateFilter = DateFilter.Today;
 
+    private bool _isActivitySummaryExpanded = false;
+    private bool _isUsageChartExpanded = false;
+    private bool _isSessionHistoryExpanded = false;
+
     public MainPage()
     {
         InitializeComponent();
@@ -126,6 +130,30 @@ public partial class MainPage : ContentPage
         UpdateUsageChart();
         UpdateTimeline();
         UpdateDateFilterButtonColors();
+    }
+
+    private void ActivitySummaryHeaderTapped(object sender, TappedEventArgs e)
+    {
+        _isActivitySummaryExpanded = !_isActivitySummaryExpanded;
+
+        ActivitySummaryContent.IsVisible = _isActivitySummaryExpanded;
+        ActivitySummaryChevron.Text = _isActivitySummaryExpanded ? "⌃" : "⌄";
+    }
+
+    private void UsageChartHeaderTapped(object sender, TappedEventArgs e)
+    {
+        _isUsageChartExpanded = !_isUsageChartExpanded;
+
+        UsageChartContent.IsVisible = _isUsageChartExpanded;
+        UsageChartChevron.Text = _isUsageChartExpanded ? "⌃" : "⌄";
+    }
+
+    private void SessionHistoryHeaderTapped(object sender, TappedEventArgs e)
+    {
+        _isSessionHistoryExpanded = !_isSessionHistoryExpanded;
+
+        SessionHistoryContent.IsVisible = _isSessionHistoryExpanded;
+        SessionHistoryChevron.Text = _isSessionHistoryExpanded ? "⌃" : "⌄";
     }
 
     private void RebuildVisibleSessions()

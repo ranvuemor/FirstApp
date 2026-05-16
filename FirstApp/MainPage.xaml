@@ -377,6 +377,8 @@
 
             <!-- ACTIVITY SUMMARY -->
 
+            <!-- ACTIVITY SUMMARY -->
+
             <Border
                 BackgroundColor="#111827"
                 Stroke="#263244"
@@ -389,46 +391,70 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Label
-                        Text="Acitivity Summary"
-                        FontSize="22"
-                        FontAttributes="Bold"
-                        TextColor="#F8FAFC"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="ActivitySummaryHeaderTapped"/>
+                        </Grid.GestureRecognizers>
 
-                    <CollectionView
-                        x:Name="SummaryList"
-                        SelectionMode="None">
+                        <Label
+                            Grid.Column="0"
+                            Text="Activity Summary"
+                            FontSize="22"
+                            FontAttributes="Bold"
+                            TextColor="#F8FAFC"/>
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                        <Label
+                            x:Name="ActivitySummaryChevron"
+                            Grid.Column="1"
+                            Text="⌄"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="#94A3B8"
+                            VerticalOptions="Center"/>
+                    </Grid>
 
-                                <Grid
-                                    Padding="8"
-                                    ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout
+                        x:Name="ActivitySummaryContent"
+                        IsVisible="False">
 
-                                    <Label
-                                        Grid.Column="0"
-                                        Text="{Binding DisplayName}"
-                                        FontSize="15"
-                                        TextColor="#F8FAFC"
-                                        FontAttributes="Bold"/>
+                        <CollectionView
+                            x:Name="SummaryList"
+                            SelectionMode="None">
 
-                                    <Label
-                                        Grid.Column="1"
-                                        Text="{Binding FormattedTime}"
-                                        FontSize="15"
-                                        TextColor="#38BDF8"/>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                </Grid>
+                                    <Grid
+                                        Padding="8"
+                                        ColumnDefinitions="*,Auto">
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                        <Label
+                                            Grid.Column="0"
+                                            Text="{Binding DisplayName}"
+                                            FontSize="15"
+                                            TextColor="#F8FAFC"
+                                            FontAttributes="Bold"/>
 
-                    </CollectionView>
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding FormattedTime}"
+                                            FontSize="15"
+                                            TextColor="#38BDF8"/>
+
+                                    </Grid>
+
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                        </CollectionView>
+
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
 
             </Border>
+
+            <!-- USAGE CHART -->
 
             <!-- USAGE CHART -->
 
@@ -444,21 +470,45 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Label
-                        Text="Usage Chart"
-                        FontSize="22"
-                        FontAttributes="Bold"
-                        TextColor="#F8FAFC"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="UsageChartHeaderTapped"/>
+                        </Grid.GestureRecognizers>
+
+                        <Label
+                            Grid.Column="0"
+                            Text="Usage Chart"
+                            FontSize="22"
+                            FontAttributes="Bold"
+                            TextColor="#F8FAFC"/>
+
+                        <Label
+                            x:Name="UsageChartChevron"
+                            Grid.Column="1"
+                            Text="⌄"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="#94A3B8"
+                            VerticalOptions="Center"/>
+                    </Grid>
 
                     <VerticalStackLayout
-                        x:Name="UsageChartContainer"
-                        Spacing="10"/>
+                        x:Name="UsageChartContent"
+                        IsVisible="False">
+
+                        <VerticalStackLayout
+                            x:Name="UsageChartContainer"
+                            Spacing="10"/>
+
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
 
             </Border>
 
 
+
+            <!-- SESSION HISTORY -->
 
             <!-- SESSION HISTORY -->
 
@@ -475,8 +525,13 @@
                 <VerticalStackLayout Spacing="12">
 
                     <Grid ColumnDefinitions="*,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="SessionHistoryHeaderTapped"/>
+                        </Grid.GestureRecognizers>
 
-                        <VerticalStackLayout Spacing="2">
+                        <VerticalStackLayout
+                            Grid.Column="0"
+                            Spacing="2">
 
                             <Label
                                 Text="Session History"
@@ -488,66 +543,80 @@
                                 Text="Recent app sessions recorded during this run"
                                 FontSize="13"
                                 TextColor="#94A3B8"/>
-                            
 
                         </VerticalStackLayout>
 
+                        <Label
+                            x:Name="SessionHistoryChevron"
+                            Grid.Column="1"
+                            Text="⌄"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="#94A3B8"
+                            VerticalOptions="Center"/>
+
                     </Grid>
 
-                    <CollectionView
-                        x:Name="SessionList"
-                        SelectionMode="None">
+                    <VerticalStackLayout
+                        x:Name="SessionHistoryContent"
+                        IsVisible="False">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                        <CollectionView
+                            x:Name="SessionList"
+                            SelectionMode="None">
 
-                                <Border
-                                    BackgroundColor="#0F172A"
-                                    Stroke="#1E293B"
-                                    StrokeThickness="1"
-                                    Padding="12"
-                                    Margin="0,5">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
 
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="16"/>
-                                    </Border.StrokeShape>
+                                    <Border
+                                        BackgroundColor="#0F172A"
+                                        Stroke="#1E293B"
+                                        StrokeThickness="1"
+                                        Padding="12"
+                                        Margin="0,5">
 
-                                    <Grid
-                                        ColumnDefinitions="*,Auto"
-                                        RowDefinitions="Auto,Auto"
-                                        RowSpacing="4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="16"/>
+                                        </Border.StrokeShape>
 
-                                        <Label
-                                            Grid.Row="0"
-                                            Grid.Column="0"
-                                            Text="{Binding DisplayName}"
-                                            FontSize="16"
-                                            FontAttributes="Bold"
-                                            TextColor="#F8FAFC"/>
+                                        <Grid
+                                            ColumnDefinitions="*,Auto"
+                                            RowDefinitions="Auto,Auto"
+                                            RowSpacing="4">
 
-                                        <Label
-                                            Grid.Row="0"
-                                            Grid.Column="1"
-                                            Text="{Binding XP, StringFormat='{0} XP'}"
-                                            FontSize="14"
-                                            FontAttributes="Bold"
-                                            TextColor="#FBBF24"/>
+                                            <Label
+                                                Grid.Row="0"
+                                                Grid.Column="0"
+                                                Text="{Binding DisplayName}"
+                                                FontSize="16"
+                                                FontAttributes="Bold"
+                                                TextColor="#F8FAFC"/>
 
-                                        <Label
-                                            Grid.Row="1"
-                                            Grid.Column="0"
-                                            Text="{Binding FormattedDuration}"
-                                            FontSize="13"
-                                            TextColor="#38BDF8"/>
+                                            <Label
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Text="{Binding XP, StringFormat='{0} XP'}"
+                                                FontSize="14"
+                                                FontAttributes="Bold"
+                                                TextColor="#FBBF24"/>
 
-                                    </Grid>
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Text="{Binding FormattedDuration}"
+                                                FontSize="13"
+                                                TextColor="#38BDF8"/>
 
-                                </Border>
+                                        </Grid>
 
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
+                                    </Border>
 
-                    </CollectionView>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                        </CollectionView>
+
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
 
