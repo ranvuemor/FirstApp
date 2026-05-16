@@ -377,8 +377,6 @@
 
             <!-- ACTIVITY SUMMARY -->
 
-            <!-- ACTIVITY SUMMARY -->
-
             <Border
                 BackgroundColor="#111827"
                 Stroke="#263244"
@@ -391,7 +389,7 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Tapped="ActivitySummaryHeaderTapped"/>
                         </Grid.GestureRecognizers>
@@ -404,8 +402,17 @@
                             TextColor="#F8FAFC"/>
 
                         <Label
-                            x:Name="ActivitySummaryChevron"
+                            x:Name="ActivitySummaryPreview"
                             Grid.Column="1"
+                            Text="0s total"
+                            FontSize="13"
+                            TextColor="#38BDF8"
+                            VerticalOptions="Center"
+                            Margin="0,0,12,0"/>
+
+                        <Label
+                            x:Name="ActivitySummaryChevron"
+                            Grid.Column="2"
                             Text="⌄"
                             FontSize="24"
                             FontAttributes="Bold"
@@ -456,8 +463,6 @@
 
             <!-- USAGE CHART -->
 
-            <!-- USAGE CHART -->
-
             <Border
                 BackgroundColor="#111827"
                 Stroke="#263244"
@@ -470,7 +475,7 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Tapped="UsageChartHeaderTapped"/>
                         </Grid.GestureRecognizers>
@@ -483,8 +488,17 @@
                             TextColor="#F8FAFC"/>
 
                         <Label
-                            x:Name="UsageChartChevron"
+                            x:Name="UsageChartPreview"
                             Grid.Column="1"
+                            Text="No data"
+                            FontSize="13"
+                            TextColor="#38BDF8"
+                            VerticalOptions="Center"
+                            Margin="0,0,12,0"/>
+
+                        <Label
+                            x:Name="UsageChartChevron"
+                            Grid.Column="2"
                             Text="⌄"
                             FontSize="24"
                             FontAttributes="Bold"
@@ -506,10 +520,6 @@
 
             </Border>
 
-
-
-            <!-- SESSION HISTORY -->
-
             <!-- SESSION HISTORY -->
 
             <Border
@@ -524,7 +534,7 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Tapped="SessionHistoryHeaderTapped"/>
                         </Grid.GestureRecognizers>
@@ -547,8 +557,17 @@
                         </VerticalStackLayout>
 
                         <Label
-                            x:Name="SessionHistoryChevron"
+                            x:Name="SessionHistoryPreview"
                             Grid.Column="1"
+                            Text="0 sessions"
+                            FontSize="13"
+                            TextColor="#38BDF8"
+                            VerticalOptions="Center"
+                            Margin="0,0,12,0"/>
+
+                        <Label
+                            x:Name="SessionHistoryChevron"
+                            Grid.Column="2"
                             Text="⌄"
                             FontSize="24"
                             FontAttributes="Bold"

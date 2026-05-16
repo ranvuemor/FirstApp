@@ -130,30 +130,66 @@ public partial class MainPage : ContentPage
         UpdateUsageChart();
         UpdateTimeline();
         UpdateDateFilterButtonColors();
+        UpdateCollapsedCardPreviews();
+        ApplyExpandableCardStates();
+    }
+
+    private void ApplyExpandableCardStates()
+    {
+        ActivitySummaryContent.IsVisible = _isActivitySummaryExpanded;
+        UsageChartContent.IsVisible = _isUsageChartExpanded;
+        SessionHistoryContent.IsVisible = _isSessionHistoryExpanded;
+
+        ActivitySummaryChevron.Text = _isActivitySummaryExpanded ? "⌃" : "⌄";
+        UsageChartChevron.Text = _isUsageChartExpanded ? "⌃" : "⌄";
+        SessionHistoryChevron.Text = _isSessionHistoryExpanded ? "⌃" : "⌄";
     }
 
     private void ActivitySummaryHeaderTapped(object sender, TappedEventArgs e)
     {
         _isActivitySummaryExpanded = !_isActivitySummaryExpanded;
-
-        ActivitySummaryContent.IsVisible = _isActivitySummaryExpanded;
-        ActivitySummaryChevron.Text = _isActivitySummaryExpanded ? "⌃" : "⌄";
+        ApplyExpandableCardStates();
     }
 
     private void UsageChartHeaderTapped(object sender, TappedEventArgs e)
     {
         _isUsageChartExpanded = !_isUsageChartExpanded;
-
-        UsageChartContent.IsVisible = _isUsageChartExpanded;
-        UsageChartChevron.Text = _isUsageChartExpanded ? "⌃" : "⌄";
+        ApplyExpandableCardStates();
     }
 
     private void SessionHistoryHeaderTapped(object sender, TappedEventArgs e)
     {
         _isSessionHistoryExpanded = !_isSessionHistoryExpanded;
+        ApplyExpandableCardStates();
+    }
 
-        SessionHistoryContent.IsVisible = _isSessionHistoryExpanded;
-        SessionHistoryChevron.Text = _isSessionHistoryExpanded ? "⌃" : "⌄";
+    private void UpdateCollapsedCardPreviews()
+    {
+        var visibleSessions = GetVisibleSessions().ToList();
+
+        TimeSpan totalTime = TimeSpan.FromSeconds(
+            visibleSessions.Sum(s => s.Duration.TotalSeconds)
+        );
+
+        ActivitySummaryPreview.Text =
+            $"{FormatDuration(totalTime)} total";
+
+        var topCategory = visibleSessions
+            .GroupBy(s => s.Category)
+            .Select(g => new
+            {
+                Category = g.Key,
+                TotalSeconds = g.Sum(s => s.Duration.TotalSeconds)
+            })
+            .OrderByDescending(g => g.TotalSeconds)
+            .FirstOrDefault();
+
+        UsageChartPreview.Text = topCategory == null
+            ? "No data"
+            : $"Top: {topCategory.Category}";
+
+        SessionHistoryPreview.Text =
+            $"{visibleSessions.Count} sessions";
     }
 
     private void RebuildVisibleSessions()
@@ -479,6 +515,7 @@ public partial class MainPage : ContentPage
         UpdateCategorySummaries();
         UpdateLevelUI();
         UpdateUsageChart();
+        UpdateCollapsedCardPreviews();
     }
 
     private void UpdateCategorySummaries()
