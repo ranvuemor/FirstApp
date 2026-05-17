@@ -157,7 +157,7 @@
 
             <Grid
                 ColumnDefinitions="*,*"
-                RowDefinitions="Auto,Auto,Auto"
+                RowDefinitions="Auto,Auto,Auto,Auto"
                 ColumnSpacing="16"
                 RowSpacing="16">
 
@@ -469,10 +469,67 @@
 
                 </Border>
 
-                <!-- USAGE + SESSION HISTORY COMBINED -->
+                <!-- HOURLY HEATMAP -->
 
                 <Border
                     Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="#111827"
+                    Stroke="#263244"
+                    StrokeThickness="1"
+                    Padding="16">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <VerticalStackLayout Spacing="2">
+
+                                <Label
+                                    Text="Hourly Activity"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <Label
+                                    Text="Average activity by hour for the selected range"
+                                    FontSize="12"
+                                    TextColor="#94A3B8"/>
+
+                            </VerticalStackLayout>
+
+                            <Label
+                                x:Name="HeatmapPreview"
+                                Grid.Column="1"
+                                Text="0h tracked"
+                                FontSize="12"
+                                TextColor="#38BDF8"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                        <ScrollView Orientation="Horizontal">
+
+                            <HorizontalStackLayout
+                                x:Name="HourlyHeatmapContainer"
+                                Spacing="8"
+                                Padding="2"/>
+
+                        </ScrollView>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- ACTIVITY DETAILS -->
+
+                <Border
+                    Grid.Row="3"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     BackgroundColor="#111827"

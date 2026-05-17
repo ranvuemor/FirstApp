@@ -127,6 +127,7 @@ public partial class MainPage : ContentPage
         UpdateLevelUI();
         UpdateUsageChart();
         UpdateTimeline();
+        UpdateHourlyHeatmap();
         UpdateDateFilterButtonColors();
         UpdateCollapsedCardPreviews();
         ApplyExpandableCardStates();
@@ -458,6 +459,193 @@ public partial class MainPage : ContentPage
         });
     }
 
+    private void AddSessionToHourlyBuckets(
+        ActivitySession session,
+        double[] hourlySeconds)
+    {
+        DateTime start = session.StartTime;
+        DateTime end = session.EndTime;
+
+        if (end <= start)
+            return;
+
+        DateTime cursor = start;
+
+        while (cursor < end)
+        {
+            DateTime nextHour = new DateTime(
+                cursor.Year,
+                cursor.Month,
+                cursor.Day,
+                cursor.Hour,
+                0,
+                0
+            ).AddHours(1);
+
+            DateTime segmentEnd = end < nextHour
+                ? end
+                : nextHour;
+
+            double seconds = (segmentEnd - cursor).TotalSeconds;
+
+            hourlySeconds[cursor.Hour] += seconds;
+
+            cursor = segmentEnd;
+        }
+    }
+
+    private Color GetHeatmapColor(double intensity)
+    {
+        if (intensity <= 0)
+            return Color.FromArgb("#1E293B");
+
+        if (intensity < 0.25)
+            return Color.FromArgb("#164E63");
+
+        if (intensity < 0.5)
+            return Color.FromArgb("#0891B2");
+
+        if (intensity < 0.75)
+            return Color.FromArgb("#38BDF8");
+
+        return Color.FromArgb("#FBBF24");
+    }
+
+    private View CreateHourlyHeatmapBlock(
+            int hour,
+            double seconds,
+            double intensity)
+    {
+        Color blockColor = GetHeatmapColor(intensity);
+
+        string timeText = $"{hour:00}";
+
+        string durationText = seconds <= 0
+            ? "0s"
+            : FormatDuration(TimeSpan.FromSeconds(seconds));
+
+        var block = new VerticalStackLayout
+        {
+            Spacing = 6,
+            WidthRequest = 48,
+            HorizontalOptions = LayoutOptions.Center
+        };
+
+        block.Children.Add(new Label
+        {
+            Text = timeText,
+            FontSize = 11,
+            TextColor = Color.FromArgb("#94A3B8"),
+            HorizontalTextAlignment = TextAlignment.Center
+        });
+
+        block.Children.Add(new Border
+        {
+            WidthRequest = 42,
+            HeightRequest = 42,
+            BackgroundColor = blockColor,
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle
+            {
+                CornerRadius = 10
+            }
+        });
+
+        block.Children.Add(new Label
+        {
+            Text = durationText,
+            FontSize = 10,
+            TextColor = Color.FromArgb("#CBD5E1"),
+            HorizontalTextAlignment = TextAlignment.Center,
+            LineBreakMode = LineBreakMode.TailTruncation
+        });
+
+        return block;
+    }
+
+    private int GetAllTimeDayCount()
+    {
+        if (_sessions.Count == 0)
+            return 1;
+
+        DateTime firstDay = _sessions
+            .Min(s => s.StartTime.Date);
+
+        DateTime lastDay = DateTime.Today;
+
+        int days = (lastDay - firstDay).Days + 1;
+
+        return Math.Max(1, days);
+    }
+
+    private int GetSelectedDateRangeDayCount()
+    {
+        var today = DateTime.Today;
+
+        return _selectedDateFilter switch
+        {
+            DateFilter.Today => 1,
+
+            DateFilter.Yesterday => 1,
+
+            DateFilter.ThisWeek => 7,
+
+            DateFilter.AllTime => GetAllTimeDayCount(),
+
+            _ => 1
+        };
+    }
+
+    private void UpdateHourlyHeatmap()
+    {
+        if (HourlyHeatmapContainer == null)
+            return;
+
+        HourlyHeatmapContainer.Children.Clear();
+
+        var visibleSessions = GetVisibleSessions().ToList();
+
+        double[] hourlyTotals = new double[24];
+
+        foreach (var session in visibleSessions)
+        {
+            AddSessionToHourlyBuckets(session, hourlyTotals);
+        }
+
+        int dayCount = GetSelectedDateRangeDayCount();
+
+        if (dayCount <= 0)
+            dayCount = 1;
+
+        double[] hourlyAverages = hourlyTotals
+            .Select(seconds => seconds / dayCount)
+            .ToArray();
+
+        double maxAverageSeconds = hourlyAverages.Max();
+
+        double totalAverageSecondsPerDay = hourlyAverages.Sum();
+
+        HeatmapPreview.Text =
+            $"{FormatDuration(TimeSpan.FromSeconds(totalAverageSecondsPerDay))}/day avg";
+
+        for (int hour = 0; hour < 24; hour++)
+        {
+            double averageSeconds = hourlyAverages[hour];
+
+            double intensity = maxAverageSeconds <= 0
+                ? 0
+                : averageSeconds / maxAverageSeconds;
+
+            var block = CreateHourlyHeatmapBlock(
+                hour,
+                averageSeconds,
+                intensity
+            );
+
+            HourlyHeatmapContainer.Children.Add(block);
+        }
+    }
+
     private void TryUpdateTimeline(ref DateTime lastUpdate)
     {
         var now = DateTime.Now;
@@ -518,6 +706,7 @@ public partial class MainPage : ContentPage
         UpdateCategorySummaries();
         UpdateLevelUI();
         UpdateUsageChart();
+        UpdateHourlyHeatmap();
         UpdateCollapsedCardPreviews();
     }
 
