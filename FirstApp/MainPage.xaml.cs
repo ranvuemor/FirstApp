@@ -459,64 +459,30 @@ public partial class MainPage : ContentPage
         });
     }
 
-    private void AddSessionToHourlyBuckets(
-        ActivitySession session,
-        double[] hourlySeconds)
-    {
-        DateTime start = session.StartTime;
-        DateTime end = session.EndTime;
-
-        if (end <= start)
-            return;
-
-        DateTime cursor = start;
-
-        while (cursor < end)
-        {
-            DateTime nextHour = new DateTime(
-                cursor.Year,
-                cursor.Month,
-                cursor.Day,
-                cursor.Hour,
-                0,
-                0
-            ).AddHours(1);
-
-            DateTime segmentEnd = end < nextHour
-                ? end
-                : nextHour;
-
-            double seconds = (segmentEnd - cursor).TotalSeconds;
-
-            hourlySeconds[cursor.Hour] += seconds;
-
-            cursor = segmentEnd;
-        }
-    }
-
-    private Color GetHeatmapColor(double intensity)
+    private Color GetHeatmapCategoryColor(
+        ActivityCategory category,
+        double intensity)
     {
         if (intensity <= 0)
             return Color.FromArgb("#1E293B");
 
-        if (intensity < 0.25)
-            return Color.FromArgb("#164E63");
+        Color baseColor = GetColorForCategory(category);
 
-        if (intensity < 0.5)
-            return Color.FromArgb("#0891B2");
+        double alpha = 0.25 + (0.75 * intensity);
 
-        if (intensity < 0.75)
-            return Color.FromArgb("#38BDF8");
-
-        return Color.FromArgb("#FBBF24");
+        return baseColor.WithAlpha((float)alpha);
     }
 
     private View CreateHourlyHeatmapBlock(
             int hour,
             double seconds,
-            double intensity)
+            double intensity,
+            ActivityCategory dominantCategory)
     {
-        Color blockColor = GetHeatmapColor(intensity);
+        Color blockColor = GetHeatmapCategoryColor(
+            dominantCategory,
+            intensity
+        );
 
         string timeText = $"{hour:00}";
 
@@ -596,6 +562,61 @@ public partial class MainPage : ContentPage
         };
     }
 
+    private void AddSessionToHourlyCategoryBuckets(
+        ActivitySession session,
+        Dictionary<ActivityCategory, double>[] hourlyCategorySeconds)
+    {
+        DateTime start = session.StartTime;
+        DateTime end = session.EndTime;
+
+        if (end <= start)
+            return;
+
+        DateTime cursor = start;
+        ActivityCategory category = session.Category;
+
+        while (cursor < end)
+        {
+            DateTime nextHour = new DateTime(
+                cursor.Year,
+                cursor.Month,
+                cursor.Day,
+                cursor.Hour,
+                0,
+                0
+            ).AddHours(1);
+
+            DateTime segmentEnd = end < nextHour
+                ? end
+                : nextHour;
+
+            double seconds = (segmentEnd - cursor).TotalSeconds;
+
+            int hour = cursor.Hour;
+
+            if (!hourlyCategorySeconds[hour].ContainsKey(category))
+            {
+                hourlyCategorySeconds[hour][category] = 0;
+            }
+
+            hourlyCategorySeconds[hour][category] += seconds;
+
+            cursor = segmentEnd;
+        }
+    }
+
+    private ActivityCategory GetDominantCategory(
+        Dictionary<ActivityCategory, double> categoryData)
+    {
+        if (categoryData.Count == 0)
+            return ActivityCategory.Unknown;
+
+        return categoryData
+            .OrderByDescending(c => c.Value)
+            .First()
+            .Key;
+    }
+
     private void UpdateHourlyHeatmap()
     {
         if (HourlyHeatmapContainer == null)
@@ -605,11 +626,14 @@ public partial class MainPage : ContentPage
 
         var visibleSessions = GetVisibleSessions().ToList();
 
-        double[] hourlyTotals = new double[24];
+        var hourlyCategorySeconds = Enumerable
+            .Range(0, 24)
+            .Select(_ => new Dictionary<ActivityCategory, double>())
+            .ToArray();
 
         foreach (var session in visibleSessions)
         {
-            AddSessionToHourlyBuckets(session, hourlyTotals);
+            AddSessionToHourlyCategoryBuckets(session, hourlyCategorySeconds);
         }
 
         int dayCount = GetSelectedDateRangeDayCount();
@@ -617,29 +641,37 @@ public partial class MainPage : ContentPage
         if (dayCount <= 0)
             dayCount = 1;
 
-        double[] hourlyAverages = hourlyTotals
-            .Select(seconds => seconds / dayCount)
+        double[] hourlyAverageTotals = hourlyCategorySeconds
+            .Select(hour =>
+                hour.Values.Sum() / dayCount
+            )
             .ToArray();
 
-        double maxAverageSeconds = hourlyAverages.Max();
+        double maxAverageSeconds = hourlyAverageTotals.Max();
 
-        double totalAverageSecondsPerDay = hourlyAverages.Sum();
+        double totalAverageSecondsPerDay = hourlyAverageTotals.Sum();
 
         HeatmapPreview.Text =
             $"{FormatDuration(TimeSpan.FromSeconds(totalAverageSecondsPerDay))}/day avg";
 
         for (int hour = 0; hour < 24; hour++)
         {
-            double averageSeconds = hourlyAverages[hour];
+            var categoryData = hourlyCategorySeconds[hour];
+
+            double averageTotalSeconds = hourlyAverageTotals[hour];
+
+            ActivityCategory dominantCategory =
+                GetDominantCategory(categoryData);
 
             double intensity = maxAverageSeconds <= 0
                 ? 0
-                : averageSeconds / maxAverageSeconds;
+                : averageTotalSeconds / maxAverageSeconds;
 
             var block = CreateHourlyHeatmapBlock(
                 hour,
-                averageSeconds,
-                intensity
+                averageTotalSeconds,
+                intensity,
+                dominantCategory
             );
 
             HourlyHeatmapContainer.Children.Add(block);
