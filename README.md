@@ -234,7 +234,7 @@ The long-term vision is to build a personal “App Replay” dashboard that help
 - Browser URL detection may not work reliably on every browser
 - FlaUI and UI Automation behavior can vary depending on browser version and UI structure
 - The dashboard currently loads saved sessions directly from the local database
-- Long-term use will require better date filtering and data management
+- Long-term use may require more efficient database queries, cleanup tools, and large-dataset optimization
 - Timeline performance may need optimization when many sessions are recorded
 
 ---
