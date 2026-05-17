@@ -204,7 +204,22 @@ FirstApp/
 │
 ├── MainPage.xaml
 ├── MainPage.xaml.cs
+├── MainPage.Tracking.cs
+├── MainPage.Filters.cs
+├── MainPage.Dashboard.cs
+├── MainPage.Timeline.cs
+├── MainPage.Charts.cs
+├── MainPage.Heatmap.cs
+├── MainPage.Helpers.cs
+├── App.xaml
+├── App.xaml.cs
+├── AppShell.xaml
+├── AppShell.xaml.cs
 └── MauiProgram.cs
+```
+
+```markdown
+The `MainPage` logic is split across multiple partial class files to keep the code easier to navigate. `MainPage.xaml.cs` contains the main page setup and lifecycle logic, while the other `MainPage.*.cs` files separate tracking, filters, dashboard updates, timeline rendering, charts, heatmap logic, and shared helper methods.
 ```
 
 ---
