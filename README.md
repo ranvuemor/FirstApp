@@ -1,6 +1,6 @@
 # FirstApp – Real-Time Activity Tracker
 
-FirstApp is a Windows-focused .NET MAUI desktop application that tracks the currently active application, records usage sessions, detects idle time, classifies activities, awards XP, and visualizes activity through a timeline-based dashboard.
+FirstApp is a Windows-focused .NET MAUI desktop application that tracks the currently active application, records usage sessions, detects idle time, classifies activities, awards XP, and visualizes activity through a timeline-based productivity dashboard.
 
 The project is an experimental productivity and self-tracking app inspired by the idea of an “App Replay” system, where users can review how their time was spent across applications, websites, and activity categories.
 
@@ -31,7 +31,7 @@ Example:
 
 - Detects when the user has not used the keyboard or mouse for a set period
 - Adds idle time as its own activity state
-- Shows idle periods in the timeline, summaries, usage chart, and session history
+- Shows idle periods in the timeline, summaries, usage chart, heatmap, and session history
 
 ### Activity Classification
 
@@ -57,6 +57,18 @@ Classification is based on the active app name, window title, and browser URL.
 - Displays total XP
 - Shows current level
 - Shows XP progress toward the next level
+- Updates progress based on the selected date range
+
+### Date Filtering
+
+The dashboard can filter activity data by:
+
+- Today
+- Yesterday
+- This Week
+- All Time
+
+The selected filter affects the XP dashboard, activity summary, timeline, usage chart, heatmap, and session history.
 
 ### Timeline Visualization
 
@@ -66,11 +78,22 @@ Classification is based on the active app name, window title, and browser URL.
 - Displays session category, app name, and duration when there is enough space
 - Makes it easier to visually review the flow of activity over time
 
+### Hourly Activity Heatmap
+
+- Shows activity intensity across 24 hours
+- Uses the selected date filter to calculate hourly activity
+- For Today and Yesterday, shows actual activity per hour
+- For This Week, shows average activity per hour across the week
+- For All Time, shows average activity per hour across all tracked days
+- Colors each hour by the dominant activity category
+- Uses color intensity to represent how active that hour was
+
 ### Activity Summary
 
 - Groups usage time by application
 - Shows how much time was spent in each app
 - Uses cleaned app names for better readability
+- Stays visible beside the XP dashboard for quick review
 
 Example:
 
@@ -84,12 +107,21 @@ Example:
 - Shows usage time grouped by activity category
 - Uses category-colored horizontal bars
 - Makes it easier to understand how time was distributed across different types of activity
+- Lives inside a collapsible details section with session history
 
 ### Session History
 
 - Displays recent recorded sessions
 - Shows app name, duration, and XP
-- Helps review individual activity sessions
+- Updates based on the selected date filter
+- Lives inside a collapsible details section with the usage chart
+
+### Expandable Dashboard Sections
+
+- Activity Summary remains visible for quick access
+- Usage Chart and Session History are grouped inside a shared collapsible details card
+- Collapsed cards show preview information such as top category and session count
+- The expanded/collapsed state is preserved while switching date filters
 
 ### Local Persistence
 
@@ -132,6 +164,19 @@ These APIs allow the app to detect the active window, process name, window title
 
 ---
 
+## Dashboard Layout
+
+The current dashboard layout is designed for a desktop-style experience:
+
+- Header and live current activity card
+- Date filter buttons
+- XP Dashboard and Activity Summary side by side
+- Full-width activity timeline
+- Full-width hourly heatmap
+- Collapsible Activity Details card containing Usage Chart and Session History
+
+---
+
 ## Project Structure
 
 ```text
@@ -140,7 +185,8 @@ FirstApp/
 │   ├── ActivitySession.cs
 │   ├── ActivityCategory.cs
 │   ├── AppSummary.cs
-│   └── CategorySummary.cs
+│   ├── CategorySummary.cs
+│   └── DateFilter.cs
 │
 ├── Services/
 │   ├── ActiveWindowService.cs
