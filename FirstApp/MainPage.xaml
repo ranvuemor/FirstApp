@@ -153,436 +153,105 @@
 
             </Border>
 
-            <!-- XP DASHBOARD -->
+            <!-- DASHBOARD GRID -->
 
-            <Border
-                BackgroundColor="#151B2E"
-                Stroke="#334155"
-                StrokeThickness="1"
-                Padding="18">
+            <Grid
+                ColumnDefinitions="*,*"
+                RowDefinitions="Auto,Auto,Auto"
+                ColumnSpacing="16"
+                RowSpacing="16">
 
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24"/>
-                </Border.StrokeShape>
+                <!-- XP DASHBOARD -->
 
-                <VerticalStackLayout Spacing="16">
+                <Border
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    BackgroundColor="#151B2E"
+                    Stroke="#334155"
+                    StrokeThickness="1"
+                    Padding="16">
 
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
 
-                        <VerticalStackLayout Spacing="2">
+                    <VerticalStackLayout Spacing="12">
 
-                            <Label
-                                Text="XP Dashboard"
-                                FontSize="22"
-                                FontAttributes="Bold"
-                                TextColor="#F8FAFC"/>
+                        <Grid ColumnDefinitions="*,Auto">
 
-                            <Label
-                                Text="Level progress from your daily activity"
-                                FontSize="13"
-                                TextColor="#94A3B8"/>
-
-                        </VerticalStackLayout>
-
-                        <Label
-                            Grid.Column="1"
-                            x:Name="TotalXPLabel"
-                            Text="Total XP: 0"
-                            FontSize="20"
-                            FontAttributes="Bold"
-                            TextColor="#FBBF24"
-                            VerticalOptions="Center"/>
-
-                    </Grid>
-
-                    <Border
-                        BackgroundColor="#0F172A"
-                        Stroke="#1E293B"
-                        StrokeThickness="1"
-                        Padding="14">
-
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="18"/>
-                        </Border.StrokeShape>
-
-                        <VerticalStackLayout Spacing="10">
-
-                            <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
 
                                 <Label
-                                    x:Name="LevelLabel"
-                                    Text="Level 1"
-                                    FontSize="26"
+                                    Text="XP Dashboard"
+                                    FontSize="20"
                                     FontAttributes="Bold"
-                                    TextColor="White"/>
+                                    TextColor="#F8FAFC"/>
 
                                 <Label
-                                    Grid.Column="1"
-                                    x:Name="LevelProgressLabel"
-                                    Text="0 / 100 XP"
-                                    FontSize="14"
-                                    TextColor="#CBD5E1"
-                                    VerticalOptions="Center"/>
+                                    x:Name="XpDashboardSubtitle"
+                                    Text="Today's progress"
+                                    FontSize="12"
+                                    TextColor="#94A3B8"/>
 
-                            </Grid>
-
-                            <ProgressBar
-                                x:Name="LevelProgressBar"
-                                Progress="0"
-                                HeightRequest="10"
-                                ProgressColor="#FBBF24"
-                                BackgroundColor="#334155"/>
-
-                        </VerticalStackLayout>
-
-                    </Border>
-
-                    <CollectionView
-                        x:Name="CategorySummaryList"
-                        SelectionMode="None">
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-
-                                <Border
-                                    BackgroundColor="#0F172A"
-                                    Stroke="#1E293B"
-                                    StrokeThickness="1"
-                                    Padding="12"
-                                    Margin="0,4">
-
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="16"/>
-                                    </Border.StrokeShape>
-
-                                    <Grid
-                                        ColumnDefinitions="*,Auto,Auto"
-                                        ColumnSpacing="16">
-
-                                        <Label
-                                            Grid.Column="0"
-                                            Text="{Binding CategoryName}"
-                                            FontSize="16"
-                                            FontAttributes="Bold"
-                                            TextColor="#F8FAFC"
-                                            VerticalOptions="Center"/>
-
-                                        <Label
-                                            Grid.Column="1"
-                                            Text="{Binding FormattedTime}"
-                                            FontSize="14"
-                                            TextColor="#CBD5E1"
-                                            VerticalOptions="Center"/>
-
-                                        <Label
-                                            Grid.Column="2"
-                                            Text="{Binding TotalXP, StringFormat='{0} XP'}"
-                                            FontSize="14"
-                                            FontAttributes="Bold"
-                                            TextColor="#FBBF24"
-                                            VerticalOptions="Center"/>
-
-                                    </Grid>
-
-                                </Border>
-
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-
-                    </CollectionView>
-
-                </VerticalStackLayout>
-
-            </Border>
-
-            <!-- TIMELINE SECTION -->
-
-            <Border
-                BackgroundColor="#111827"
-                Stroke="#263244"
-                StrokeThickness="1"
-                Padding="18">
-
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24"/>
-                </Border.StrokeShape>
-
-                <VerticalStackLayout Spacing="14">
-
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-
-                        <VerticalStackLayout Spacing="2">
+                            </VerticalStackLayout>
 
                             <Label
-                                Text="Timeline"
-                                FontSize="22"
+                                Grid.Column="1"
+                                x:Name="TotalXPLabel"
+                                Text="Total XP: 0"
+                                FontSize="15"
                                 FontAttributes="Bold"
-                                TextColor="#F8FAFC"/>
+                                TextColor="#FBBF24"
+                                VerticalOptions="Center"/>
 
-                            <Label
-                                Text="Zoom and scroll through your activity flow"
-                                FontSize="13"
-                                TextColor="#94A3B8"/>
+                        </Grid>
 
-                        </VerticalStackLayout>
+                        <Border
+                            BackgroundColor="#0F172A"
+                            Stroke="#1E293B"
+                            StrokeThickness="1"
+                            Padding="12">
 
-                        <Button
-                            Grid.Column="1"
-                            Text="−"
-                            WidthRequest="44"
-                            HeightRequest="40"
-                            CornerRadius="14"
-                            FontSize="22"
-                            BackgroundColor="#1E293B"
-                            TextColor="White"
-                            Clicked="ZoomOutClicked"/>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18"/>
+                            </Border.StrokeShape>
 
-                        <Button
-                            Grid.Column="2"
-                            Text="+"
-                            WidthRequest="44"
-                            HeightRequest="40"
-                            CornerRadius="14"
-                            FontSize="22"
-                            BackgroundColor="#2563EB"
-                            TextColor="White"
-                            Clicked="ZoomInClicked"/>
+                            <VerticalStackLayout Spacing="8">
 
-                    </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
 
-                    <Border
-                        BackgroundColor="#0B1120"
-                        Stroke="#1E293B"
-                        StrokeThickness="1"
-                        Padding="10">
+                                    <Label
+                                        x:Name="LevelLabel"
+                                        Text="Level 1"
+                                        FontSize="26"
+                                        FontAttributes="Bold"
+                                        TextColor="White"/>
 
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="18"/>
-                        </Border.StrokeShape>
+                                    <Label
+                                        Grid.Column="1"
+                                        x:Name="LevelProgressLabel"
+                                        Text="0 / 100 XP"
+                                        FontSize="13"
+                                        TextColor="#CBD5E1"
+                                        VerticalOptions="Center"/>
 
-                        <ScrollView Orientation="Horizontal">
+                                </Grid>
 
-                            <HorizontalStackLayout
-                                x:Name="TimelineContainer"
-                                Spacing="7"
-                                Padding="4"/>
+                                <ProgressBar
+                                    x:Name="LevelProgressBar"
+                                    Progress="0"
+                                    HeightRequest="8"
+                                    ProgressColor="#FBBF24"
+                                    BackgroundColor="#334155"/>
 
-                        </ScrollView>
+                            </VerticalStackLayout>
 
-                    </Border>
-
-                </VerticalStackLayout>
-
-            </Border>
-
-            <!-- ACTIVITY SUMMARY -->
-
-            <Border
-                BackgroundColor="#111827"
-                Stroke="#263244"
-                StrokeThickness="1"
-                Padding="16">
-
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24"/>
-                </Border.StrokeShape>
-
-                <VerticalStackLayout Spacing="12">
-
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="ActivitySummaryHeaderTapped"/>
-                        </Grid.GestureRecognizers>
-
-                        <Label
-                            Grid.Column="0"
-                            Text="Activity Summary"
-                            FontSize="22"
-                            FontAttributes="Bold"
-                            TextColor="#F8FAFC"/>
-
-                        <Label
-                            x:Name="ActivitySummaryPreview"
-                            Grid.Column="1"
-                            Text="0s total"
-                            FontSize="13"
-                            TextColor="#38BDF8"
-                            VerticalOptions="Center"
-                            Margin="0,0,12,0"/>
-
-                        <Label
-                            x:Name="ActivitySummaryChevron"
-                            Grid.Column="2"
-                            Text="⌄"
-                            FontSize="24"
-                            FontAttributes="Bold"
-                            TextColor="#94A3B8"
-                            VerticalOptions="Center"/>
-                    </Grid>
-
-                    <VerticalStackLayout
-                        x:Name="ActivitySummaryContent"
-                        IsVisible="False">
+                        </Border>
 
                         <CollectionView
-                            x:Name="SummaryList"
-                            SelectionMode="None">
-
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-
-                                    <Grid
-                                        Padding="8"
-                                        ColumnDefinitions="*,Auto">
-
-                                        <Label
-                                            Grid.Column="0"
-                                            Text="{Binding DisplayName}"
-                                            FontSize="15"
-                                            TextColor="#F8FAFC"
-                                            FontAttributes="Bold"/>
-
-                                        <Label
-                                            Grid.Column="1"
-                                            Text="{Binding FormattedTime}"
-                                            FontSize="15"
-                                            TextColor="#38BDF8"/>
-
-                                    </Grid>
-
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-
-                        </CollectionView>
-
-                    </VerticalStackLayout>
-
-                </VerticalStackLayout>
-
-            </Border>
-
-            <!-- USAGE CHART -->
-
-            <Border
-                BackgroundColor="#111827"
-                Stroke="#263244"
-                StrokeThickness="1"
-                Padding="16">
-
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24"/>
-                </Border.StrokeShape>
-
-                <VerticalStackLayout Spacing="12">
-
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="UsageChartHeaderTapped"/>
-                        </Grid.GestureRecognizers>
-
-                        <Label
-                            Grid.Column="0"
-                            Text="Usage Chart"
-                            FontSize="22"
-                            FontAttributes="Bold"
-                            TextColor="#F8FAFC"/>
-
-                        <Label
-                            x:Name="UsageChartPreview"
-                            Grid.Column="1"
-                            Text="No data"
-                            FontSize="13"
-                            TextColor="#38BDF8"
-                            VerticalOptions="Center"
-                            Margin="0,0,12,0"/>
-
-                        <Label
-                            x:Name="UsageChartChevron"
-                            Grid.Column="2"
-                            Text="⌄"
-                            FontSize="24"
-                            FontAttributes="Bold"
-                            TextColor="#94A3B8"
-                            VerticalOptions="Center"/>
-                    </Grid>
-
-                    <VerticalStackLayout
-                        x:Name="UsageChartContent"
-                        IsVisible="False">
-
-                        <VerticalStackLayout
-                            x:Name="UsageChartContainer"
-                            Spacing="10"/>
-
-                    </VerticalStackLayout>
-
-                </VerticalStackLayout>
-
-            </Border>
-
-            <!-- SESSION HISTORY -->
-
-            <Border
-                BackgroundColor="#111827"
-                Stroke="#263244"
-                StrokeThickness="1"
-                Padding="16">
-
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="24"/>
-                </Border.StrokeShape>
-
-                <VerticalStackLayout Spacing="12">
-
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                        <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="SessionHistoryHeaderTapped"/>
-                        </Grid.GestureRecognizers>
-
-                        <VerticalStackLayout
-                            Grid.Column="0"
-                            Spacing="2">
-
-                            <Label
-                                Text="Session History"
-                                FontSize="22"
-                                FontAttributes="Bold"
-                                TextColor="#F8FAFC"/>
-
-                            <Label
-                                Text="Recent app sessions recorded during this run"
-                                FontSize="13"
-                                TextColor="#94A3B8"/>
-
-                        </VerticalStackLayout>
-
-                        <Label
-                            x:Name="SessionHistoryPreview"
-                            Grid.Column="1"
-                            Text="0 sessions"
-                            FontSize="13"
-                            TextColor="#38BDF8"
-                            VerticalOptions="Center"
-                            Margin="0,0,12,0"/>
-
-                        <Label
-                            x:Name="SessionHistoryChevron"
-                            Grid.Column="2"
-                            Text="⌄"
-                            FontSize="24"
-                            FontAttributes="Bold"
-                            TextColor="#94A3B8"
-                            VerticalOptions="Center"/>
-
-                    </Grid>
-
-                    <VerticalStackLayout
-                        x:Name="SessionHistoryContent"
-                        IsVisible="False">
-
-                        <CollectionView
-                            x:Name="SessionList"
-                            SelectionMode="None">
+                            x:Name="CategorySummaryList"
+                            SelectionMode="None"
+                            HeightRequest="170">
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
@@ -591,40 +260,39 @@
                                         BackgroundColor="#0F172A"
                                         Stroke="#1E293B"
                                         StrokeThickness="1"
-                                        Padding="12"
-                                        Margin="0,5">
+                                        Padding="10"
+                                        Margin="0,3">
 
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="16"/>
+                                            <RoundRectangle CornerRadius="14"/>
                                         </Border.StrokeShape>
 
                                         <Grid
-                                            ColumnDefinitions="*,Auto"
-                                            RowDefinitions="Auto,Auto"
-                                            RowSpacing="4">
+                                            ColumnDefinitions="*,Auto,Auto"
+                                            ColumnSpacing="10">
 
                                             <Label
-                                                Grid.Row="0"
                                                 Grid.Column="0"
-                                                Text="{Binding DisplayName}"
-                                                FontSize="16"
-                                                FontAttributes="Bold"
-                                                TextColor="#F8FAFC"/>
-
-                                            <Label
-                                                Grid.Row="0"
-                                                Grid.Column="1"
-                                                Text="{Binding XP, StringFormat='{0} XP'}"
+                                                Text="{Binding CategoryName}"
                                                 FontSize="14"
                                                 FontAttributes="Bold"
-                                                TextColor="#FBBF24"/>
+                                                TextColor="#F8FAFC"
+                                                VerticalOptions="Center"/>
 
                                             <Label
-                                                Grid.Row="1"
-                                                Grid.Column="0"
-                                                Text="{Binding FormattedDuration}"
-                                                FontSize="13"
-                                                TextColor="#38BDF8"/>
+                                                Grid.Column="1"
+                                                Text="{Binding FormattedTime}"
+                                                FontSize="12"
+                                                TextColor="#CBD5E1"
+                                                VerticalOptions="Center"/>
+
+                                            <Label
+                                                Grid.Column="2"
+                                                Text="{Binding TotalXP, StringFormat='{0} XP'}"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                TextColor="#FBBF24"
+                                                VerticalOptions="Center"/>
 
                                         </Grid>
 
@@ -637,9 +305,329 @@
 
                     </VerticalStackLayout>
 
-                </VerticalStackLayout>
+                </Border>
 
-            </Border>
+                <!-- ACTIVITY SUMMARY -->
+
+                <Border
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    BackgroundColor="#111827"
+                    Stroke="#263244"
+                    StrokeThickness="1"
+                    Padding="16">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <VerticalStackLayout Spacing="2">
+
+                                <Label
+                                    Text="Activity Summary"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <Label
+                                    Text="Time by app"
+                                    FontSize="12"
+                                    TextColor="#94A3B8"/>
+
+                            </VerticalStackLayout>
+
+                            <Label
+                                x:Name="ActivitySummaryPreview"
+                                Grid.Column="1"
+                                Text="0s total"
+                                FontSize="12"
+                                TextColor="#38BDF8"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                        <CollectionView
+                            x:Name="SummaryList"
+                            SelectionMode="None"
+                            HeightRequest="210">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Grid
+                                        Padding="7"
+                                        ColumnDefinitions="*,Auto">
+
+                                        <Label
+                                            Grid.Column="0"
+                                            Text="{Binding DisplayName}"
+                                            FontSize="14"
+                                            TextColor="#F8FAFC"
+                                            FontAttributes="Bold"/>
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding FormattedTime}"
+                                            FontSize="14"
+                                            TextColor="#38BDF8"/>
+
+                                    </Grid>
+
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- TIMELINE SECTION -->
+
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="#111827"
+                    Stroke="#263244"
+                    StrokeThickness="1"
+                    Padding="16">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="12">
+
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+
+                            <VerticalStackLayout Spacing="2">
+
+                                <Label
+                                    Text="Timeline"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <Label
+                                    Text="Zoom and scroll through your activity flow"
+                                    FontSize="12"
+                                    TextColor="#94A3B8"/>
+
+                            </VerticalStackLayout>
+
+                            <Button
+                                Grid.Column="1"
+                                Text="−"
+                                WidthRequest="40"
+                                HeightRequest="36"
+                                CornerRadius="12"
+                                FontSize="20"
+                                BackgroundColor="#1E293B"
+                                TextColor="White"
+                                Clicked="ZoomOutClicked"/>
+
+                            <Button
+                                Grid.Column="2"
+                                Text="+"
+                                WidthRequest="40"
+                                HeightRequest="36"
+                                CornerRadius="12"
+                                FontSize="20"
+                                BackgroundColor="#2563EB"
+                                TextColor="White"
+                                Clicked="ZoomInClicked"/>
+
+                        </Grid>
+
+                        <Border
+                            BackgroundColor="#0B1120"
+                            Stroke="#1E293B"
+                            StrokeThickness="1"
+                            Padding="10">
+
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18"/>
+                            </Border.StrokeShape>
+
+                            <ScrollView Orientation="Horizontal">
+
+                                <HorizontalStackLayout
+                                    x:Name="TimelineContainer"
+                                    Spacing="7"
+                                    Padding="4"/>
+
+                            </ScrollView>
+
+                        </Border>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+                <!-- USAGE + SESSION HISTORY COMBINED -->
+
+                <Border
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="#111827"
+                    Stroke="#263244"
+                    StrokeThickness="1"
+                    Padding="16">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="14">
+
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="DetailsHeaderTapped"/>
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+
+                                <Label
+                                    Text="Details"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <Label
+                                    x:Name="DetailsSubtitle"
+                                    Text="Usage chart and session history for today"
+                                    FontSize="12"
+                                    TextColor="#94A3B8"/>
+
+                            </VerticalStackLayout>
+
+                            <Label
+                                x:Name="DetailsPreview"
+                                Grid.Column="1"
+                                Text="No data"
+                                FontSize="12"
+                                TextColor="#38BDF8"
+                                VerticalOptions="Center"
+                                Margin="0,0,10,0"/>
+
+                            <Label
+                                x:Name="DetailsChevron"
+                                Grid.Column="2"
+                                Text="⌄"
+                                FontSize="22"
+                                FontAttributes="Bold"
+                                TextColor="#94A3B8"
+                                VerticalOptions="Center"/>
+
+                        </Grid>
+
+                        <Grid
+                            x:Name="DetailsContent"
+                            IsVisible="False"
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="16">
+
+                            <!-- USAGE CHART SIDE -->
+
+                            <VerticalStackLayout
+                                Grid.Column="0"
+                                Spacing="10">
+
+                                <Label
+                                    Text="Usage Chart"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <VerticalStackLayout
+                                    x:Name="UsageChartContainer"
+                                    Spacing="8"/>
+
+                            </VerticalStackLayout>
+
+                            <!-- SESSION HISTORY SIDE -->
+
+                            <VerticalStackLayout
+                                Grid.Column="1"
+                                Spacing="10">
+
+                                <Label
+                                    Text="Session History"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="#F8FAFC"/>
+
+                                <CollectionView
+                                    x:Name="SessionList"
+                                    SelectionMode="None"
+                                    HeightRequest="230">
+
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+
+                                            <Border
+                                                BackgroundColor="#0F172A"
+                                                Stroke="#1E293B"
+                                                StrokeThickness="1"
+                                                Padding="10"
+                                                Margin="0,4">
+
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14"/>
+                                                </Border.StrokeShape>
+
+                                                <Grid
+                                                    ColumnDefinitions="*,Auto"
+                                                    RowDefinitions="Auto,Auto"
+                                                    RowSpacing="3">
+
+                                                    <Label
+                                                        Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        Text="{Binding DisplayName}"
+                                                        FontSize="14"
+                                                        FontAttributes="Bold"
+                                                        TextColor="#F8FAFC"/>
+
+                                                    <Label
+                                                        Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        Text="{Binding XP, StringFormat='{0} XP'}"
+                                                        FontSize="12"
+                                                        FontAttributes="Bold"
+                                                        TextColor="#FBBF24"/>
+
+                                                    <Label
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Text="{Binding FormattedDuration}"
+                                                        FontSize="12"
+                                                        TextColor="#38BDF8"/>
+
+                                                </Grid>
+
+                                            </Border>
+
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+
+                                </CollectionView>
+
+                            </VerticalStackLayout>
+
+                        </Grid>
+
+                    </VerticalStackLayout>
+
+                </Border>
+
+            </Grid>
 
         </VerticalStackLayout>
 

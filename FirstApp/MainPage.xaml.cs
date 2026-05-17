@@ -43,9 +43,7 @@ public partial class MainPage : ContentPage
 
     private DateFilter _selectedDateFilter = DateFilter.Today;
 
-    private bool _isActivitySummaryExpanded = false;
-    private bool _isUsageChartExpanded = false;
-    private bool _isSessionHistoryExpanded = false;
+    private bool _isDetailsExpanded;
 
     public MainPage()
     {
@@ -132,34 +130,18 @@ public partial class MainPage : ContentPage
         UpdateDateFilterButtonColors();
         UpdateCollapsedCardPreviews();
         ApplyExpandableCardStates();
+        UpdateDashboardSubtitles();
     }
 
     private void ApplyExpandableCardStates()
     {
-        ActivitySummaryContent.IsVisible = _isActivitySummaryExpanded;
-        UsageChartContent.IsVisible = _isUsageChartExpanded;
-        SessionHistoryContent.IsVisible = _isSessionHistoryExpanded;
-
-        ActivitySummaryChevron.Text = _isActivitySummaryExpanded ? "⌃" : "⌄";
-        UsageChartChevron.Text = _isUsageChartExpanded ? "⌃" : "⌄";
-        SessionHistoryChevron.Text = _isSessionHistoryExpanded ? "⌃" : "⌄";
+        DetailsContent.IsVisible = _isDetailsExpanded;
+        DetailsChevron.Text = _isDetailsExpanded ? "⌃" : "⌄";
     }
 
-    private void ActivitySummaryHeaderTapped(object sender, TappedEventArgs e)
+    private void DetailsHeaderTapped(object sender, TappedEventArgs e)
     {
-        _isActivitySummaryExpanded = !_isActivitySummaryExpanded;
-        ApplyExpandableCardStates();
-    }
-
-    private void UsageChartHeaderTapped(object sender, TappedEventArgs e)
-    {
-        _isUsageChartExpanded = !_isUsageChartExpanded;
-        ApplyExpandableCardStates();
-    }
-
-    private void SessionHistoryHeaderTapped(object sender, TappedEventArgs e)
-    {
-        _isSessionHistoryExpanded = !_isSessionHistoryExpanded;
+        _isDetailsExpanded = !_isDetailsExpanded;
         ApplyExpandableCardStates();
     }
 
@@ -184,12 +166,33 @@ public partial class MainPage : ContentPage
             .OrderByDescending(g => g.TotalSeconds)
             .FirstOrDefault();
 
-        UsageChartPreview.Text = topCategory == null
+        string topText = topCategory == null
             ? "No data"
             : $"Top: {topCategory.Category}";
 
-        SessionHistoryPreview.Text =
-            $"{visibleSessions.Count} sessions";
+        DetailsPreview.Text =
+            $"{topText} · {visibleSessions.Count} sessions";
+    }
+
+    private void UpdateDashboardSubtitles()
+    {
+        XpDashboardSubtitle.Text = _selectedDateFilter switch
+        {
+            DateFilter.Today => "Today's progress",
+            DateFilter.Yesterday => "Yesterday's progress",
+            DateFilter.ThisWeek => "This week's progress",
+            DateFilter.AllTime => "All-time progress",
+            _ => "Activity progress"
+        };
+
+        DetailsSubtitle.Text = _selectedDateFilter switch
+        {
+            DateFilter.Today => "Usage chart and session history for today",
+            DateFilter.Yesterday => "Usage chart and session history for yesterday",
+            DateFilter.ThisWeek => "Usage chart and session history for this week",
+            DateFilter.AllTime => "Usage chart and session history across all time",
+            _ => "Usage chart and session history"
+        };
     }
 
     private void RebuildVisibleSessions()
