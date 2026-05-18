@@ -27,6 +27,7 @@ public partial class MainPage
         {
             ActivityCategory.Programming => Color.FromArgb("#8B5CF6"),
             ActivityCategory.Learning => Color.FromArgb("#38BDF8"),
+            ActivityCategory.ArtificialIntelligence => Color.FromArgb("#10B981"),
             ActivityCategory.Writing => Color.FromArgb("#F59E0B"),
             ActivityCategory.Browsing => Color.FromArgb("#06B6D4"),
             ActivityCategory.Entertainment => Color.FromArgb("#EF4444"),

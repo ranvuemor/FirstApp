@@ -6,6 +6,7 @@ public enum ActivityCategory
     Browsing,
     Entertainment,
     Learning,
+    ArtificialIntelligence,
     Writing,
     Gaming,
     System,

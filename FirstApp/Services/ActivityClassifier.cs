@@ -20,7 +20,9 @@ public static class ActivityClassifier
         {
             if (url.Contains("youtube.com") ||
                 url.Contains("netflix.com") ||
-                url.Contains("twitch.tv"))
+                url.Contains("twitch.tv") ||
+                title.Contains("primevideo.com") ||
+                title.Contains("hotstar.com"))
                 return ActivityCategory.Entertainment;
 
             if (url.Contains("github.com") ||
@@ -34,7 +36,7 @@ public static class ActivityClassifier
                 url.Contains("claude.ai") ||
                 url.Contains("perplexity.ai") ||
                 url.Contains("gemini.google.com"))
-                return ActivityCategory.Learning;
+                return ActivityCategory.ArtificialIntelligence;
 
             if (url.Contains("docs.google.com") ||
                 url.Contains("notion.so") ||
@@ -44,7 +46,9 @@ public static class ActivityClassifier
             // fallback to title if URL was not detected
             if (title.Contains("youtube") ||
                 title.Contains("netflix") ||
-                title.Contains("twitch"))
+                title.Contains("twitch") ||
+                title.Contains("prime") ||
+                title.Contains("hotstar"))
                 return ActivityCategory.Entertainment;
 
             if (title.Contains("github") ||
@@ -58,7 +62,7 @@ public static class ActivityClassifier
                 title.Contains("claude") ||
                 title.Contains("perplexity") ||
                 title.Contains("gemini"))
-                return ActivityCategory.Learning;
+                return ActivityCategory.ArtificialIntelligence;
 
             return ActivityCategory.Browsing;
         }
@@ -91,6 +95,7 @@ public static class ActivityClassifier
         {
             ActivityCategory.Programming => 100,
             ActivityCategory.Learning => 80,
+            ActivityCategory.ArtificialIntelligence => 50,
             ActivityCategory.Writing => 70,
             ActivityCategory.Browsing => 30,
             ActivityCategory.Entertainment => 20,
