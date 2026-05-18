@@ -1,0 +1,206 @@
+{
+  "rules": [
+    {
+      "name": "Idle",
+      "apps": [ "idle" ],
+      "category": "Idle",
+      "priority": 1000
+    },
+
+    {
+      "name": "Visual Studio",
+      "apps": [ "devenv" ],
+      "category": "Programming",
+      "priority": 900
+    },
+    {
+      "name": "Visual Studio Code",
+      "apps": [ "code" ],
+      "category": "Programming",
+      "priority": 900
+    },
+    {
+      "name": "JetBrains Rider",
+      "apps": [ "rider64", "rider" ],
+      "category": "Programming",
+      "priority": 900
+    },
+    {
+      "name": "Terminal",
+      "apps": [ "windowsterminal", "cmd", "powershell", "pwsh" ],
+      "category": "Programming",
+      "priority": 850
+    },
+
+    {
+      "name": "GitHub",
+      "domains": [ "github.com" ],
+      "category": "Programming",
+      "priority": 900
+    },
+    {
+      "name": "Stack Overflow",
+      "domains": [ "stackoverflow.com", "stackexchange.com" ],
+      "category": "Programming",
+      "priority": 900
+    },
+    {
+      "name": "Microsoft Learn",
+      "domains": [ "learn.microsoft.com", "docs.microsoft.com" ],
+      "category": "Learning",
+      "priority": 850
+    },
+    {
+      "name": "MDN Web Docs",
+      "domains": [ "developer.mozilla.org" ],
+      "category": "Learning",
+      "priority": 850
+    },
+
+    {
+      "name": "ChatGPT",
+      "domains": [ "chatgpt.com", "openai.com" ],
+      "category": "ArtificialIntelligence",
+      "priority": 850
+    },
+    {
+      "name": "Claude",
+      "domains": [ "claude.ai" ],
+      "category": "ArtificialIntelligence",
+      "priority": 850
+    },
+    {
+      "name": "Perplexity",
+      "domains": [ "perplexity.ai" ],
+      "category": "ArtificialIntelligence",
+      "priority": 850
+    },
+    {
+      "name": "Gemini",
+      "domains": [ "gemini.google.com" ],
+      "category": "ArtificialIntelligence",
+      "priority": 850
+    },
+
+    {
+      "name": "Google Docs",
+      "domains": [ "docs.google.com" ],
+      "category": "Writing",
+      "priority": 850
+    },
+    {
+      "name": "Notion",
+      "domains": [ "notion.so", "notion.site" ],
+      "category": "Writing",
+      "priority": 850
+    },
+    {
+      "name": "Overleaf",
+      "domains": [ "overleaf.com" ],
+      "category": "Writing",
+      "priority": 850
+    },
+    {
+      "name": "Microsoft Word",
+      "apps": [ "winword" ],
+      "category": "Writing",
+      "priority": 850
+    },
+
+    {
+      "name": "YouTube Programming",
+      "domains": [ "youtube.com", "youtu.be" ],
+      "titleKeywords": [ "programming", "coding", "c#", ".net", "maui", "tutorial", "course", "lecture" ],
+      "category": "Learning",
+      "priority": 950
+    },
+    {
+      "name": "YouTube",
+      "domains": [ "youtube.com", "youtu.be" ],
+      "category": "Entertainment",
+      "priority": 500
+    },
+    {
+      "name": "Netflix",
+      "domains": [ "netflix.com" ],
+      "category": "Entertainment",
+      "priority": 800
+    },
+    {
+      "name": "Prime",
+      "domains": [ "primevideo.com" ],
+      "category": "Entertainment",
+      "priority": 800
+    },
+    {
+      "name": "Hotstar",
+      "domains": [ "hotstar.com" ],
+      "category": "Entertainment",
+      "priority": 800
+    },
+    {
+      "name": "Twitch",
+      "domains": [ "twitch.tv" ],
+      "category": "Entertainment",
+      "priority": 800
+    },
+    {
+      "name": "Spotify",
+      "domains": [ "spotify.com" ],
+      "apps": [ "spotify" ],
+      "category": "Entertainment",
+      "priority": 700
+    },
+
+    {
+      "name": "Steam",
+      "apps": [ "steam" ],
+      "category": "Gaming",
+      "priority": 850
+    },
+    {
+      "name": "Epic Games",
+      "apps": [ "epicgameslauncher" ],
+      "category": "Gaming",
+      "priority": 850
+    },
+    {
+      "name": "Riot Games",
+      "apps": [ "riotclientservices", "leagueclient" ],
+      "category": "Gaming",
+      "priority": 850
+    },
+
+    {
+      "name": "Windows Explorer",
+      "apps": [ "explorer" ],
+      "category": "System",
+      "priority": 600
+    },
+    {
+      "name": "Task Manager",
+      "apps": [ "taskmgr" ],
+      "category": "System",
+      "priority": 600
+    },
+    {
+      "name": "Settings",
+      "apps": [ "systemsettings" ],
+      "category": "System",
+      "priority": 600
+    },
+
+    {
+      "name": "Learning Keywords",
+      "titleKeywords": [ "course", "lecture", "tutorial", "assignment", "homework", "documentation" ],
+      "category": "Learning",
+      "priority": 300
+    },
+    {
+      "name": "Writing Keywords",
+      "titleKeywords": [ "resume", "cover letter", "document", "essay", "report" ],
+      "category": "Writing",
+      "priority": 300
+    }
+  ]
+}

@@ -36,6 +36,8 @@ public partial class MainPage : ContentPage
     {
         try
         {
+            await ActivityClassifier.InitializeAsync();
+
             var savedSessions = await _database.GetSessionsAsync();
 
             foreach (var session in savedSessions)
