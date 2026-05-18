@@ -184,6 +184,8 @@ FirstApp/
 ├── Models/
 │   ├── ActivitySession.cs
 │   ├── ActivityCategory.cs
+│   ├── ActivityRule.cs
+│   ├── ActivityRuleSet.cs
 │   ├── AppSummary.cs
 │   ├── CategorySummary.cs
 │   └── DateFilter.cs
@@ -192,6 +194,7 @@ FirstApp/
 │   ├── ActiveWindowService.cs
 │   ├── IdleDetectionService.cs
 │   ├── ActivityClassifier.cs
+│   ├── ActivityRuleLoader.cs
 │   ├── ActivityDatabaseService.cs
 │   ├── AppNameFormatter.cs
 │   ├── LevelService.cs
@@ -201,6 +204,10 @@ FirstApp/
 │   └── Windows/
 │       └── Services/
 │           └── BrowserUrlService.cs
+|
+├── Resources/
+│   └── Raw/
+│       └── activity-rules.json
 │
 ├── MainPage.xaml
 ├── MainPage.xaml.cs
