@@ -217,6 +217,7 @@ FirstApp/
 ├── MainPage.Timeline.cs
 ├── MainPage.Charts.cs
 ├── MainPage.Heatmap.cs
+├── MainPage.Reset.cs
 ├── MainPage.Helpers.cs
 ├── App.xaml
 ├── App.xaml.cs
