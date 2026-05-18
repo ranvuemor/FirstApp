@@ -41,4 +41,11 @@ public class ActivityDatabaseService
         else
             await _database!.UpdateAsync(session);
     }
+
+    public async Task DeleteAllSessionsAsync()
+    {
+        await InitAsync();
+
+        await _database!.DeleteAllAsync<ActivitySession>();
+    }
 }

@@ -92,6 +92,14 @@
                     BackgroundColor="#1E293B"
                     TextColor="White"
                     CornerRadius="18" />
+
+                <Button
+                    Text="Reset All Data"
+                    Clicked="ResetDataClicked"
+                    BackgroundColor="#7F1D1D"
+                    TextColor="White"
+                    CornerRadius="12"
+                    Padding="14,8"/>
             </HorizontalStackLayout>
 
             <!-- CURRENT ACTIVITY CARD -->
